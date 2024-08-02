@@ -23,7 +23,6 @@ setup(
         'vantage6-algorithm-tools',
         'pandas',
         'requests',
-        'os',
         'numpy'
     ]
 )

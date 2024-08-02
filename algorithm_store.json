@@ -1,0 +1,53 @@
+{
+  "name": "v6-descriptive-statistics",
+  "image": "medicaldataworks.azurecr.io/projects/strongaya/v6-descriptive-statistics",
+  "vantage6_version": "4.3",
+  "partitioning": "horizontal",
+  "functions": [
+    {
+      "name": "central",
+      "description": "Vantage6 algorithm that retrieves descriptive statistics ",
+      "type": "central",
+      "databases": [],
+      "arguments": [
+        {
+          "name": "variables_to_describe",
+          "type": "",
+          "description": ""
+        },
+        {
+          "name": "variables_to_stratify",
+          "type": "",
+          "description": ""
+        },
+        {
+          "name": "organization_ids",
+          "type": "",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "name": "partial",
+      "description": "",
+      "type": "federated",
+      "databases": [
+        {
+          "name": "Database 1"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "variables_to_describe",
+          "type": "",
+          "description": ""
+        },
+        {
+          "name": "variables_to_stratify",
+          "type": "",
+          "description": ""
+        }
+      ]
+    }
+  ]
+}

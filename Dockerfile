@@ -6,7 +6,7 @@ FROM harbor2.vantage6.ai/infrastructure/algorithm-base
 ARG PKG_NAME="v6-descriptive-statistics"
 
 # install federated algorithm
-COPY v6-descriptive-statistics /app
+COPY . /app
 RUN pip install /app
 
 

@@ -15,7 +15,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "v6-descriptive-statistics_"
+project = "v6-descriptive-statistics"
 copyright = ""
 author = "J. Hogenboom"
 

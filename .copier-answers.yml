@@ -7,7 +7,7 @@ _commit: 4.3.4
 _src_path: gh:vantage6/v6-algorithm-template.git
 advanced: true
 algorithm_description: 'Vantage6 algorithm that retrieves descriptive statistics '
-algorithm_name: v6-descriptive-statistics_
+algorithm_name: v6-descriptive-statistics
 author: J. Hogenboom
 central_args:
 - variables_to_describe
@@ -17,7 +17,7 @@ central_function_client: true
 central_function_data: false
 central_function_name: central
 copyright: ''
-docker_image: medicaldataworks.azurecr.io/projects/strongaya/v6-descriptive-statistics_
+docker_image: medicaldataworks.azurecr.io/projects/strongaya/v6-descriptive-statistics
 docker_registry: medicaldataworks.azurecr.io/projects/strongaya/
 has_central_function: true
 has_docs: true
@@ -32,5 +32,5 @@ partial_function_data: true
 partial_function_name: partial
 partial_function_number_databases: 1
 private_registry: true
-project_name: v6-descriptive-statistics_
+project_name: v6-descriptive-statistics
 use_vpn: false

@@ -112,7 +112,7 @@ def retrieve_categorical_descriptives(df: pd.DataFrame, variables_to_describe: d
         inliers = variables_to_describe[column_name].get("inliers", [])
 
         # Identify outliers by excluding inliers from value counts
-        outliers = {value: count for value, count in value_counts.items() if value not in inliers}
+        outliers = {value: count for value, count in value_counts.items() if value not in inliers and len(inliers) > 0}
         # Remove outliers from the value counts
         for outlier in outliers:
             del value_counts[outlier]

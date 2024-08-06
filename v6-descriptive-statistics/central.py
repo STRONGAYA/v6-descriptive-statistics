@@ -189,7 +189,7 @@ def aggregate_numerical_statistics(aggregate_numerical_df: pd.DataFrame) -> pd.D
 
         # Create a new DataFrame for min and max values
         min_max_stats = pd.DataFrame({
-            "variable": ["Age", "Age"],
+            "variable": [variable, variable],
             "statistic": ["min", "max"],
             "value": [min_val, max_val]
         })

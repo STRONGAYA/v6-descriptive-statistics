@@ -1,0 +1,23 @@
+PREFIX dbo: <http://um-cds/ontologies/databaseontology/>
+PREFIX roo: <http://www.cancerdata.org/roo/>
+PREFIX ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX sio: <http://semanticscience.org/resource/>
+
+SELECT DISTINCT?patient ?sub_class
+
+WHERE {
+    ?patient sio:SIO_000008 ?sub_class_type .
+    ?sub_class_type rdf:type ?main_class .
+    ?sub_class_type rdf:type PLACERHOLDER_CLASS .
+    ?sub_class_type dbo:has_cell ?sub_cell .
+    ?sub_cell rdf:type ?sub_class_class .
+
+    FILTER strStarts(str(?main_class), str(PLACERHOLDER_CLASS))
+    BIND(strafter(str(?main_class), str(PLACERHOLDER_CLASS)) AS ?main_class_code)
+
+    FILTER strStarts(str(?sub_class_class), str(PLACERHOLDER_CLASS))
+    BIND(strafter(str(?sub_class_class), str(PLACERHOLDER_CLASS)) AS ?sub_class)
+    FILTER (!regex(str(?main_class), str(?sub_class))) .
+}

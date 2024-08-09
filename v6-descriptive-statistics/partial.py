@@ -10,6 +10,7 @@ import os
 
 import pandas as pd
 
+from .post_query import post_sparql_query
 from typing import Any
 from vantage6.algorithm.tools.util import info, warn, error
 from vantage6.algorithm.tools.decorators import algorithm_client
@@ -44,6 +45,37 @@ def partial(client: AlgorithmClient, df: pd.DataFrame, variables_to_describe: di
     Returns:
     Any: A dictionary containing the aggregated descriptive statistics and the list of excluded variables.
     """
+    # Suboptimal SPARQL solution, to be improved
+    if "endpoint" in df.columns:
+        try:
+            # The "r" argument means the file will be opened in read mode
+            query = open(
+                f"{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_columns.rq",
+                "r").read()
+        except Exception as e:
+            # If there is an error reading the file, log an error
+            error(f"Unexpected error occurred whilst reading the SPARQL query file, error: {e}")
+
+        # TODO place the classes in the query; replace PLACERHOLDER_CLASS with the class in variables_to_dict.keys()
+
+        try:
+            # Post the SPARQL query to the endpoint specified in df
+            info(f"Posting SPARQL query to {df['endpoint'].iloc[0]}.")
+            result = post_sparql_query(endpoint=df["endpoint"].iloc[0], query=query)
+        except Exception as e:
+            error(f"Unexpected error occurred whilst posting SPARQL query, error: {e}")
+
+        # If the result is empty (i.e. the query returned no results) it is likely that the data is not available
+        if not result:
+            return {
+                "Variable": [],
+                "Value": [],
+                "count": []
+            }
+
+        # If the result is not empty, create a DataFrame from the result
+        df = pd.DataFrame(result)
+
     if len(df) <= sample_size_threshold:
         warn(f"Sub-task was not executed because the number of samples is too small (n <= {sample_size_threshold})")
         return {"N-Threshold not met": client.organization_id}

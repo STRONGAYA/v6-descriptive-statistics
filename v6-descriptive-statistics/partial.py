@@ -125,7 +125,8 @@ def retrieve_categorical_descriptives(df: pd.DataFrame, variables_to_describe: d
         # Store the value counts and the sum of outliers in the dictionary
         categorical_descriptives[column_name] = {
             "value_counts": value_counts,
-            "outliers": sum(outliers.values())
+            "outliers": sum(outliers.values()),
+            "nan": int(df[column_name].isna().sum())
         }
 
     # Prepare the data for the final DataFrame
@@ -134,6 +135,8 @@ def retrieve_categorical_descriptives(df: pd.DataFrame, variables_to_describe: d
                            for val, cnt in vals["value_counts"].items()
                        ] + [
                            (var, "outliers", vals["outliers"]) for var, vals in categorical_descriptives.items()
+                       ] + [
+                           (var, "nan", vals["nan"]) for var, vals in categorical_descriptives.items()
                        ]
 
     # Return the final DataFrame
@@ -187,7 +190,7 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
             (column_name, "mean", float(inlier_values.mean())),
             (column_name, "q3", float(q3)),
             (column_name, "max", float(inlier_values.max())),
-            (column_name, "nan", int(inlier_values.isna().sum())),
+            (column_name, "nan", int(column_values.isna().sum())),
             (column_name, "sum", float(inlier_values.sum())),
             (column_name, "count", int(inlier_values.count())),
             (column_name, "sq_dev_sum", float((inlier_values - inlier_values.mean()).pow(2).sum())),

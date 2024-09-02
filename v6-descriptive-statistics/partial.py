@@ -47,34 +47,7 @@ def partial(client: AlgorithmClient, df: pd.DataFrame, variables_to_describe: di
     """
     # Suboptimal SPARQL solution, to be improved
     if "endpoint" in df.columns:
-        try:
-            # The "r" argument means the file will be opened in read mode
-            query = open(
-                f"{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_columns.rq",
-                "r").read()
-        except Exception as e:
-            # If there is an error reading the file, log an error
-            error(f"Unexpected error occurred whilst reading the SPARQL query file, error: {e}")
-
-        # TODO place the classes in the query; replace PLACERHOLDER_CLASS with the class in variables_to_dict.keys()
-
-        try:
-            # Post the SPARQL query to the endpoint specified in df
-            info(f"Posting SPARQL query to {df['endpoint'].iloc[0]}.")
-            result = post_sparql_query(endpoint=df["endpoint"].iloc[0], query=query)
-        except Exception as e:
-            error(f"Unexpected error occurred whilst posting SPARQL query, error: {e}")
-
-        # If the result is empty (i.e. the query returned no results) it is likely that the data is not available
-        if not result:
-            return {
-                "Variable": [],
-                "Value": [],
-                "count": []
-            }
-
-        # If the result is not empty, create a DataFrame from the result
-        df = pd.DataFrame(result)
+        df = collect_sparql_data(df, variables_to_describe)
 
     if len(df) <= sample_size_threshold:
         warn(f"Sub-task was not executed because the number of samples is too small (n <= {sample_size_threshold})")
@@ -226,3 +199,79 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
     numerical_df = pd.DataFrame(numerical_data, columns=["variable", "statistic", "value"])
 
     return numerical_df
+
+
+def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.DataFrame:
+    """
+    Collect data from SPARQL endpoints.
+
+    Parameters:
+    df (pd.DataFrame): The input DataFrame containing the data.
+    variables_to_describe (dict): Dictionary of variables to describe.
+
+    Returns:
+    pd.DataFrame: A DataFrame containing the data from the SPARQL endpoints.
+    """
+    try:
+        # Read SPARQL query files for categorical and continuous data
+        _query_categories = open(r'C:\Users\p70087077\PycharmProjects\v6-descriptive-statistics\v6-descriptive-statistics\retrieve_categorical_columns.rq', 'r').read()
+        _query_continuous = open(r'C:\Users\p70087077\PycharmProjects\v6-descriptive-statistics\v6-descriptive-statistics\retrieve_continuous_columns.rq', 'r').read()
+    except Exception as e:
+        # Log error if reading query files fails
+        error(f"Error reading SPARQL query file: {e}")
+        return df
+
+    # Initialize an empty DataFrame to store intermediate results
+    intermediate_df = pd.DataFrame()
+
+    # Iterate over each variable to describe
+    for variable, variable_info in variables_to_describe.items():
+        # Extract ontology part from the variable
+        ontology_part = variable.split(":")[0] + ":"
+        # Replace placeholders in the categorical query
+        query = _query_categories.replace("PLACEHOLDER_CLASS", variable).replace("PLACEHOLDER_ONTOLOGY", ontology_part)
+
+        # If the variable is numerical, replace placeholders in the continuous query
+        if variable_info["datatype"] == "numerical":
+            query_continuous = _query_continuous.replace("PLACEHOLDER_CLASS", variable)
+
+        try:
+            # Log info about posting the SPARQL query
+            info(f"Posting SPARQL query to {df['endpoint'].iloc[0]}.")
+            # Post the SPARQL query and get the result
+            result = post_sparql_query(endpoint=df["endpoint"].iloc[0], query=query)
+            if variable_info["datatype"] == "numerical":
+                # Post the continuous SPARQL query if the variable is numerical
+                result_continuous = post_sparql_query(endpoint=df["endpoint"].iloc[0], query=query_continuous)
+        except Exception as e:
+            # Log error if posting the SPARQL query fails
+            error(f"Error posting SPARQL query: {e}")
+            continue
+
+        # Convert the result to a DataFrame
+        result_df = pd.DataFrame(result) if result else pd.DataFrame()
+        result_continuous_df = pd.DataFrame(result_continuous) if variable_info["datatype"] == "numerical" and result_continuous else pd.DataFrame()
+
+        if not result_df.empty and not result_continuous_df.empty:
+            # If both result DataFrames are not empty, merge them
+            result_df['sub_class'] = pd.NA
+            merged_df = pd.merge(result_df, result_continuous_df[['patient', 'value']], on="patient", how="outer")
+            merged_df['sub_class'] = merged_df['sub_class'].combine_first(merged_df['value'])
+            merged_df = merged_df.drop(columns=['value'])
+        else:
+            # If one of the result DataFrames is empty, use the non-empty one
+            merged_df = result_df if not result_df.empty else result_continuous_df
+            merged_df = merged_df.rename(columns={'value': variable})
+
+        # Rename the 'sub_class' column to the variable name
+        merged_df = merged_df.rename(columns={'sub_class': variable})
+
+        if intermediate_df.empty:
+            # If the intermediate DataFrame is empty, initialize it with the merged DataFrame
+            intermediate_df = merged_df
+        else:
+            # Otherwise, merge the intermediate DataFrame with the merged DataFrame
+            intermediate_df = pd.merge(intermediate_df, merged_df, on="patient", how="outer")
+
+    # Return the intermediate DataFrame if not empty, otherwise return the original DataFrame
+    return intermediate_df if not intermediate_df.empty else df

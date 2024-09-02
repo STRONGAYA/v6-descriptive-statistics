@@ -1,0 +1,18 @@
+PREFIX dbo: <http://um-cds/ontologies/databaseontology/>
+PREFIX roo: <http://www.cancerdata.org/roo/>
+PREFIX ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX sio: <http://semanticscience.org/resource/>
+
+SELECT DISTINCT?patient ?value
+
+WHERE {
+    ?patient sio:SIO_000008 ?sub_class_type .
+    ?sub_class_type rdf:type ?main_class .
+    ?sub_class_type rdf:type PLACEHOLDER_CLASS .
+    ?sub_class_type dbo:has_cell ?sub_cell .
+    ?sub_cell rdf:type ?sub_class_class .
+    ?sub_cell dbo:has_value ?value.
+
+}

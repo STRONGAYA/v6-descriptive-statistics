@@ -4,20 +4,24 @@ PREFIX ncit: <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX sio: <http://semanticscience.org/resource/>
+PREFIX strongaya: <http://strongaya.eu/>
 
-SELECT DISTINCT?patient ?sub_class
-
+SELECT DISTINCT ?patient ?sub_class ?value
 WHERE {
     ?patient sio:SIO_000008 ?sub_class_type .
     ?sub_class_type rdf:type ?main_class .
     ?sub_class_type rdf:type PLACEHOLDER_CLASS .
     ?sub_class_type dbo:has_cell ?sub_cell .
-    ?sub_cell rdf:type ?sub_class_class .
+    ?sub_cell dbo:has_value ?value .
 
     FILTER strStarts(str(?main_class), str(PLACEHOLDER_ONTOLOGY))
     BIND(strafter(str(?main_class), str(PLACEHOLDER_ONTOLOGY)) AS ?main_class_code)
 
-    FILTER strStarts(str(?sub_class_class), str(PLACEHOLDER_ONTOLOGY))
-    BIND(strafter(str(?sub_class_class), str(PLACEHOLDER_ONTOLOGY)) AS ?sub_class)
-    FILTER (!regex(str(?main_class), str(?sub_class))) .
+    OPTIONAL {
+        ?sub_cell rdf:type ?sub_class_class .
+        FILTER strStarts(str(?sub_class_class), str(PLACEHOLDER_ONTOLOGY))
+        BIND(strafter(str(?sub_class_class), str(PLACEHOLDER_ONTOLOGY)) AS ?sub_class)
+        ?sub_class_class rdfs:subClassOf ?main_class .
+        FILTER (!regex(str(?main_class), str(?sub_class))) .
+    }
 }

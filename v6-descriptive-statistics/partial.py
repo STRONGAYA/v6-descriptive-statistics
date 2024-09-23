@@ -218,8 +218,8 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
     """
     try:
         # Read SPARQL query files for categorical and continuous data
-        _query_categories = open(r'C:\Users\p70087077\PycharmProjects\v6-descriptive-statistics\v6-descriptive-statistics\retrieve_categorical_columns.rq', 'r').read()
-        _query_continuous = open(r'C:\Users\p70087077\PycharmProjects\v6-descriptive-statistics\v6-descriptive-statistics\retrieve_continuous_columns.rq', 'r').read()
+        _query_categories = open(f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_categorical_columns.rq', 'r').read()
+        _query_continuous = open(f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_continuous_columns.rq', 'r').read()
     except Exception as e:
         # Log error if reading query files fails
         error(f"Error reading SPARQL query file: {e}")
@@ -254,7 +254,12 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
 
         # Convert the result to a DataFrame
         result_df = pd.DataFrame(result) if result else pd.DataFrame()
-        result_continuous_df = pd.DataFrame(result_continuous) if variable_info["datatype"] == "numerical" and result_continuous else pd.DataFrame()
+        # Handle categorical data that is not value mapped
+        if 'sub_class' in result_df.columns and len(result_df['sub_class'].sum()) == 0:
+            result_df['sub_class'] = result_df['value']
+        result_df = result_df.drop(columns=['value'])
+        result_continuous_df = pd.DataFrame(result_continuous) if (
+                variable_info["datatype"] == "numerical" and result_continuous) else pd.DataFrame()
 
         if not result_df.empty and not result_continuous_df.empty:
             # If both result DataFrames are not empty, merge them

@@ -82,7 +82,7 @@ def partial(client: AlgorithmClient, df: pd.DataFrame, variables_to_describe: di
     # Handle numerical columns
     numerical_df = retrieve_numerical_descriptives(df, variables_to_describe)
 
-    return {"organisation_id": client.organization_id,
+    return {"organisation": client.organization.get(client.organization_id).get("name"),
             "categorical": categorical_df.to_json(), "numerical": numerical_df.to_json(),
             "excluded_variables": excluded_variables}
 

@@ -58,18 +58,19 @@ def partial(client: AlgorithmClient, df: pd.DataFrame, variables_to_describe: di
 
     # Convert specified columns to categorical or numerical types
     for variable, variable_info in variables_to_describe.items():
-        if (df[variable].notnull().sum() <= sample_size_threshold or (
-                df[variable] != "ncit:C54031").sum() <= sample_size_threshold):
-            warn(
-                f"Descriptive statistics for {variable} were not computed because "
-                f"the number of samples is too small (n <= {sample_size_threshold})")
-            df = df.drop(columns=variable)
-            continue
+        if variable in df.columns:
+            if (df[variable].notnull().sum() <= sample_size_threshold or (
+                    df[variable] != "ncit:C54031").sum() <= sample_size_threshold):
+                warn(
+                    f"Descriptive statistics for {variable} were not computed because "
+                    f"the number of samples is too small (n <= {sample_size_threshold})")
+                df = df.drop(columns=variable)
+                continue
 
-        if "categorical" in variable_info["datatype"]:
-            df[variable] = df[variable].astype("category")
-        if "numerical" in variable_info["datatype"]:
-            df[variable] = pd.to_numeric(df[variable], errors="coerce")
+            if "categorical" in variable_info["datatype"]:
+                df[variable] = df[variable].astype("category")
+            if "numerical" in variable_info["datatype"]:
+                df[variable] = pd.to_numeric(df[variable], errors="coerce")
 
     # Drop all unnecessary columns
     df = df.drop(columns=[col for col in df.columns if col not in variables_to_describe.keys()])
@@ -254,37 +255,38 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
 
         # Convert the result to a DataFrame
         result_df = pd.DataFrame(result) if result else pd.DataFrame()
-        result_df.drop(columns=['patient'], inplace=True)
-        result_df['patient_id'] = result_df.index
+        if not result_df.empty:
+            result_df.drop(columns=['patient'], inplace=True)
+            result_df['patient_id'] = result_df.index
 
-        # Handle categorical data that is not value mapped
-        if 'sub_class' in result_df.columns and len(result_df['sub_class'].sum()) == 0:
-            result_df['sub_class'] = result_df['value']
-        result_df = result_df.drop(columns=['value'])
-        result_continuous_df = pd.DataFrame(result_continuous) if (
-                variable_info["datatype"] == "numerical" and result_continuous) else pd.DataFrame()
-        result_continuous_df['patient_id'] = result_continuous_df.index
+            # Handle categorical data that is not value mapped
+            if 'sub_class' in result_df.columns and len(result_df['sub_class'].sum()) == 0:
+                result_df['sub_class'] = result_df['value']
+            result_df = result_df.drop(columns=['value'])
+            result_continuous_df = pd.DataFrame(result_continuous) if (
+                    variable_info["datatype"] == "numerical" and result_continuous) else pd.DataFrame()
+            result_continuous_df['patient_id'] = result_continuous_df.index
 
-        if not result_df.empty and not result_continuous_df.empty:
-            # If both result DataFrames are not empty, merge them
-            result_df['sub_class'] = pd.NA
-            merged_df = pd.merge(result_df, result_continuous_df[['patient_id', 'value']], on="patient_id", how="outer")
-            merged_df['sub_class'] = merged_df['sub_class'].combine_first(merged_df['value'])
-            merged_df = merged_df.drop(columns=['value'])
-        else:
-            # If one of the result DataFrames is empty, use the non-empty one
-            merged_df = result_df if not result_df.empty else result_continuous_df
-            merged_df = merged_df.rename(columns={'value': variable})
+            if not result_df.empty and not result_continuous_df.empty:
+                # If both result DataFrames are not empty, merge them
+                result_df['sub_class'] = pd.NA
+                merged_df = pd.merge(result_df, result_continuous_df[['patient_id', 'value']], on="patient_id", how="outer")
+                merged_df['sub_class'] = merged_df['sub_class'].combine_first(merged_df['value'])
+                merged_df = merged_df.drop(columns=['value'])
+            else:
+                # If one of the result DataFrames is empty, use the non-empty one
+                merged_df = result_df if not result_df.empty else result_continuous_df
+                merged_df = merged_df.rename(columns={'value': variable})
 
-        # Rename the 'sub_class' column to the variable name
-        merged_df = merged_df.rename(columns={'sub_class': variable})
+            # Rename the 'sub_class' column to the variable name
+            merged_df = merged_df.rename(columns={'sub_class': variable})
 
-        if intermediate_df.empty:
-            # If the intermediate DataFrame is empty, initialize it with the merged DataFrame
-            intermediate_df = merged_df
-        else:
-            # Otherwise, merge the intermediate DataFrame with the merged DataFrame
-            intermediate_df = pd.merge(intermediate_df, merged_df, on="patient_id", how="outer")
+            if intermediate_df.empty:
+                # If the intermediate DataFrame is empty, initialize it with the merged DataFrame
+                intermediate_df = merged_df
+            else:
+                # Otherwise, merge the intermediate DataFrame with the merged DataFrame
+                intermediate_df = pd.merge(intermediate_df, merged_df, on="patient_id", how="outer")
 
     # Return the intermediate DataFrame if not empty, otherwise return the original DataFrame
     return intermediate_df if not intermediate_df.empty else df

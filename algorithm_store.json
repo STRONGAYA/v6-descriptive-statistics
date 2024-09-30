@@ -1,53 +1,82 @@
 {
-  "name": "v6-descriptive-statistics",
-  "image": "medicaldataworks.azurecr.io/projects/strongaya/v6-descriptive-statistics",
-  "vantage6_version": "4.3",
+  "name": "Descriptive Statistics",
+  "code_url": "https://github.com/STRONGAYA/v6-descriptive-statistics",
+  "documentation_url": "https://github.com/STRONGAYA/v6-descriptive-statistics/wiki",
+  "vantage6_version": "4.7.0",
   "partitioning": "horizontal",
+  "description": "",
+  "image": "ghcr.io/strongaya/v6-descriptive-statistics:v1.0.0",
   "functions": [
     {
       "name": "central",
-      "description": "Vantage6 algorithm that retrieves descriptive statistics ",
-      "type": "central",
-      "databases": [],
       "arguments": [
         {
           "name": "variables_to_describe",
-          "type": "",
-          "description": ""
+          "description": "Dictionary of variables to describe. For categorical variables it should be structured as {variable_name: {datatype: categorical}}, and optionally as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} when wanting to investigate outliers. For categorical variables it should be structured as {variable: {datatype: categorical, inliers: (minimum range, maximum range)}} ",
+          "type": "json"
         },
         {
           "name": "variables_to_stratify",
-          "type": "",
-          "description": ""
+          "description": "To be implemented",
+          "type": "json"
         },
         {
           "name": "organization_ids",
-          "type": "",
-          "description": ""
+          "description": "List of organisation IDs to include. Defaults to None",
+          "type": "organization_list"
+        }
+      ],
+      "type": "central",
+      "databases": [],
+      "description": "Vantage6 algorithm that retrieves descriptive statistics",
+      "ui_visualizations": [
+        {
+          "name": "Categorical descriptives",
+          "type": "table",
+          "schema": {
+            "location": [
+              "categorical_descriptives"
+            ],
+            "columns": []
+          },
+          "description": "A table providing the aggregate descriptive statistics for categorical data."
+        },
+        {
+          "name": "Numerical descriptives",
+          "type": "table",
+          "schema": {
+            "location": [
+              "numerical_descriptives"
+            ],
+            "columns": []
+          },
+          "description": "A table providing the aggregate descriptive statistics for numerical data."
         }
       ]
     },
     {
       "name": "partial",
-      "description": "",
-      "type": "federated",
-      "databases": [
-        {
-          "name": "Database 1"
-        }
-      ],
       "arguments": [
         {
           "name": "variables_to_describe",
-          "type": "",
-          "description": ""
+          "description": "Dictionary of variables to describe. For numerical variables it should be structured as {variable_name: {datatype: numerical/categorical}}, and optionally as {variable: {datatype: numerical, inliers: (minimum range, maximum range)}} when wanting to investigate outliers. For categorical variables it should be structured as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} ",
+          "type": "json"
         },
         {
           "name": "variables_to_stratify",
-          "type": "",
+          "description": "To be implemented",
+          "type": "json"
+        }
+      ],
+      "type": "federated",
+      "databases": [
+        {
+          "name": "Database 1",
           "description": ""
         }
-      ]
+      ],
+      "description": "Partial algorithm that retrieves descriptive statistics",
+      "ui_visualizations": []
     }
   ]
 }

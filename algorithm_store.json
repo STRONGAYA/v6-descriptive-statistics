@@ -12,7 +12,7 @@
       "arguments": [
         {
           "name": "variables_to_describe",
-          "description": "Dictionary of variables to describe. For categorical variables it should be structured as {variable_name: {datatype: categorical}}, and optionally as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} when wanting to investigate outliers. For categorical variables it should be structured as {variable: {datatype: categorical, inliers: (minimum range, maximum range)}} ",
+          "description": "Dictionary of variables to describe. For categorical variables it should be structured as {variable_name: {datatype: categorical}}, and optionally as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} when wanting to investigate outliers. For numerical variables it should be structured as {variable: {datatype: numerical, inliers: (minimum range, maximum range)}} ",
           "type": "json"
         },
         {

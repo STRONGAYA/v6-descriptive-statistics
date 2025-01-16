@@ -6,6 +6,7 @@ PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX sio: <http://semanticscience.org/resource/>
 PREFIX sct: <http://snomed.info/id/>
 PREFIX strongaya: <http://strongaya.eu/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 SELECT DISTINCT ?patient ?sub_class ?value
 WHERE {
@@ -19,10 +20,11 @@ WHERE {
     BIND(strafter(str(?main_class), str(PLACEHOLDER_ONTOLOGY)) AS ?main_class_code)
 
     OPTIONAL {
-        ?sub_cell rdf:type ?sub_class_class .
-        FILTER strStarts(str(?sub_class_class), str(PLACEHOLDER_ONTOLOGY))
-        BIND(strafter(str(?sub_class_class), str(PLACEHOLDER_ONTOLOGY)) AS ?sub_class)
-        ?sub_class_class rdfs:subClassOf ?main_class .
-        FILTER (!regex(str(?main_class), str(?sub_class))) .
-    }
-}
+        ?sub_cell rdf:type ?sub_class .
+        FILTER (
+            strStarts(str(?sub_class), str(ncit:)) ||
+            strStarts(str(?sub_class), str(PLACEHOLDER_ONTOLOGY))
+        ) .
+    ?sub_class rdfs:subClassOf ?main_class .
+    FILTER (!regex(str(?main_class), str(?sub_class))) .
+    }}

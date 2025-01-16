@@ -219,8 +219,13 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
     """
     try:
         # Read SPARQL query files for categorical and continuous data
-        _query_categories = open(f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_categorical_columns.rq', 'r').read()
-        _query_continuous = open(f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_continuous_columns.rq', 'r').read()
+        _query_categories = open(
+            f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_categorical_columns.rq',
+            'r').read()
+        _query_continuous = open(
+            f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_continuous_columns.rq',
+            'r').read()
+
     except Exception as e:
         # Log error if reading query files fails
         error(f"Error reading SPARQL query file: {e}")
@@ -260,9 +265,16 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
             result_df['patient_id'] = result_df.index
 
             # Handle categorical data that is not value mapped
-            if 'sub_class' in result_df.columns and len(result_df['sub_class'].sum()) == 0:
+            if 'sub_class' in result_df.columns and result_df['sub_class'].isna().all():
                 result_df['sub_class'] = result_df['value']
-            result_df = result_df.drop(columns=['value'])
+
+            result_df['value'] = result_df.apply(
+                lambda row: row['sub_class'] if pd.notna(row['sub_class']) and row['sub_class'] != "" else row['value'],
+                axis=1
+            )
+            result_df = result_df.drop(columns=['sub_class'])
+            result_df = result_df.replace("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031", pd.NA)
+
             result_continuous_df = pd.DataFrame(result_continuous) if (
                     variable_info["datatype"] == "numerical" and result_continuous) else pd.DataFrame()
             result_continuous_df['patient_id'] = result_continuous_df.index
@@ -270,7 +282,8 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
             if not result_df.empty and not result_continuous_df.empty:
                 # If both result DataFrames are not empty, merge them
                 result_df['sub_class'] = pd.NA
-                merged_df = pd.merge(result_df, result_continuous_df[['patient_id', 'value']], on="patient_id", how="outer")
+                merged_df = pd.merge(result_df, result_continuous_df[['patient_id', 'value']], on="patient_id",
+                                     how="outer")
                 merged_df['sub_class'] = merged_df['sub_class'].combine_first(merged_df['value'])
                 merged_df = merged_df.drop(columns=['value'])
             else:

@@ -208,17 +208,24 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
 
 def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.DataFrame:
     """
-    Collect data from SPARQL endpoints.
+    Collect data from SPARQL endpoints for categorical and numerical variables.
+
+    This function reads SPARQL query templates, executes them for each variable based on its datatype,
+    processes the results, and combines them into a single DataFrame. It handles both categorical and
+    numerical data differently, with special processing for categorical variables that may have
+    subclasses.
 
     Parameters:
-    df (pd.DataFrame): The input DataFrame containing the data.
-    variables_to_describe (dict): Dictionary of variables to describe.
+    df (pd.DataFrame): The input DataFrame containing at least an 'endpoint' column with SPARQL endpoint URLs.
+    variables_to_describe (dict): Dictionary mapping variable names to their properties, including 'datatype'.
+                                Each variable must have a 'datatype' key with value 'categorical' or 'numerical'.
 
     Returns:
-    pd.DataFrame: A DataFrame containing the data from the SPARQL endpoints.
+    pd.DataFrame: A combined DataFrame containing all retrieved data, with 'patient_id' as the index column
+                and each variable as a separate column. Returns the input DataFrame if no data is retrieved.
     """
     try:
-        # Read SPARQL query files for categorical and continuous data
+        # Load SPARQL query templates for both categorical and numerical data
         _query_categories = open(
             f'{os.path.sep}app{os.path.sep}v6-descriptive-statistics{os.path.sep}retrieve_categorical_columns.rq',
             'r').read()
@@ -227,79 +234,73 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
             'r').read()
 
     except Exception as e:
-        # Log error if reading query files fails
+        # Return original DataFrame if query templates cannot be loaded
         error(f"Error reading SPARQL query file: {e}")
         return df
 
-    # Initialize an empty DataFrame to store intermediate results
+    # Initialize result storage
     intermediate_df = pd.DataFrame()
+    endpoint = df["endpoint"].iloc[0]  # Get SPARQL endpoint URL
 
-    # Iterate over each variable to describe
+    # Process each variable according to its type
     for variable, variable_info in variables_to_describe.items():
-        # Extract ontology part from the variable
-        ontology_part = variable.split(":")[0] + ":"
-        # Replace placeholders in the categorical query
-        query = _query_categories.replace("PLACEHOLDER_CLASS", variable).replace("PLACEHOLDER_ONTOLOGY", ontology_part)
-
-        # If the variable is numerical, replace placeholders in the continuous query
-        if variable_info["datatype"] == "numerical":
-            query_continuous = _query_continuous.replace("PLACEHOLDER_CLASS", variable)
-
         try:
-            # Log info about posting the SPARQL query
-            info(f"Posting SPARQL query to {df['endpoint'].iloc[0]}.")
-            # Post the SPARQL query and get the result
-            result = post_sparql_query(endpoint=df["endpoint"].iloc[0], query=query)
-            if variable_info["datatype"] == "numerical":
-                # Post the continuous SPARQL query if the variable is numerical
-                result_continuous = post_sparql_query(endpoint=df["endpoint"].iloc[0], query=query_continuous)
+            result_df = pd.DataFrame()
+
+            if variable_info["datatype"] == "categorical":
+                # Extract ontology prefix for categorical variables (e.g., "ncit:")
+                ontology_part = variable.split(":")[0] + ":"
+
+                # Prepare and execute categorical query
+                query = _query_categories.replace("PLACEHOLDER_CLASS", variable).replace("PLACEHOLDER_ONTOLOGY",
+                                                                                         ontology_part)
+                info(f"Posting categorical SPARQL query for {variable}")
+                result = post_sparql_query(endpoint=endpoint, query=query)
+
+                if result:
+                    # Process categorical query results
+                    result_df = pd.DataFrame(result)
+                    result_df.drop(columns=['patient'], inplace=True)
+                    result_df['patient_id'] = result_df.index
+
+                    # Handle hierarchical categorical data with subclasses
+                    if 'sub_class' in result_df.columns:
+                        # Use subclass values where available, fall back to direct values
+                        result_df[variable] = result_df.apply(
+                            lambda row: row['value'] if pd.isna(row['sub_class']) or row['sub_class'] == '' else row[
+                                'sub_class'],
+                            axis=1
+                        )
+                        result_df = result_df.drop(columns=['sub_class', 'value'])
+                    else:
+                        # Direct value mapping for non-hierarchical categories
+                        result_df = result_df.rename(columns={'value': variable})
+
+                    # Replace specific ontology URI with NA
+                    result_df = result_df.replace("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031", pd.NA)
+
+            elif variable_info["datatype"] == "numerical":
+                # Prepare and execute numerical query
+                query = _query_continuous.replace("PLACEHOLDER_CLASS", variable)
+                info(f"Posting numerical SPARQL query for {variable}")
+                result = post_sparql_query(endpoint=endpoint, query=query)
+
+                if result:
+                    # Process numerical query results
+                    result_df = pd.DataFrame(result)
+                    result_df['patient_id'] = result_df.index
+                    result_df = result_df.rename(columns={'value': variable})
+
+            # Combine results using outer join to preserve all patient data
+            if not result_df.empty:
+                if intermediate_df.empty:
+                    intermediate_df = result_df
+                else:
+                    intermediate_df = pd.merge(intermediate_df, result_df, on="patient_id", how="outer")
+
         except Exception as e:
-            # Log error if posting the SPARQL query fails
-            error(f"Error posting SPARQL query: {e}")
+            error(f"Error processing {variable}: {e}")
             continue
 
-        # Convert the result to a DataFrame
-        result_df = pd.DataFrame(result) if result else pd.DataFrame()
-        if not result_df.empty:
-            result_df.drop(columns=['patient'], inplace=True)
-            result_df['patient_id'] = result_df.index
-
-            # Handle categorical data that is not value mapped
-            if 'sub_class' in result_df.columns and result_df['sub_class'].isna().all():
-                result_df['sub_class'] = result_df['value']
-
-            result_df['value'] = result_df.apply(
-                lambda row: row['sub_class'] if pd.notna(row['sub_class']) and row['sub_class'] != "" else row['value'],
-                axis=1
-            )
-            result_df = result_df.drop(columns=['sub_class'])
-            result_df = result_df.replace("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031", pd.NA)
-
-            result_continuous_df = pd.DataFrame(result_continuous) if (
-                    variable_info["datatype"] == "numerical" and result_continuous) else pd.DataFrame()
-            result_continuous_df['patient_id'] = result_continuous_df.index
-
-            if not result_df.empty and not result_continuous_df.empty:
-                # If both result DataFrames are not empty, merge them
-                result_df['sub_class'] = pd.NA
-                merged_df = pd.merge(result_df, result_continuous_df[['patient_id', 'value']], on="patient_id",
-                                     how="outer")
-                merged_df['sub_class'] = merged_df['sub_class'].combine_first(merged_df['value'])
-                merged_df = merged_df.drop(columns=['value'])
-            else:
-                # If one of the result DataFrames is empty, use the non-empty one
-                merged_df = result_df if not result_df.empty else result_continuous_df
-                merged_df = merged_df.rename(columns={'value': variable})
-
-            # Rename the 'sub_class' column to the variable name
-            merged_df = merged_df.rename(columns={'sub_class': variable})
-
-            if intermediate_df.empty:
-                # If the intermediate DataFrame is empty, initialize it with the merged DataFrame
-                intermediate_df = merged_df
-            else:
-                # Otherwise, merge the intermediate DataFrame with the merged DataFrame
-                intermediate_df = pd.merge(intermediate_df, merged_df, on="patient_id", how="outer")
-
-    # Return the intermediate DataFrame if not empty, otherwise return the original DataFrame
+    # Return combined results or original DataFrame if no data was retrieved
     return intermediate_df if not intermediate_df.empty else df

@@ -191,7 +191,7 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
         inliers_range = variables_to_describe[column_name].get("inliers", (float("-inf"), float("inf")))
 
         # Check if inliers is a tuple of two values
-        if not (isinstance(inliers_range, tuple) and len(inliers_range) == 2):
+        if not (isinstance(inliers_range, list) and len(inliers_range) == 2):
             warn(f"Inliers for {column_name} are not a tuple of two values. Proceeding without determining outliers.")
             inliers_range = (float("-inf"), float("inf"))
 

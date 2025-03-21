@@ -60,7 +60,8 @@ def partial(client: AlgorithmClient, df: pd.DataFrame, variables_to_describe: di
     for variable, variable_info in variables_to_describe.items():
         if variable in df.columns:
             if (df[variable].notnull().sum() <= sample_size_threshold or (
-                    df[variable] != "ncit:C54031").sum() <= sample_size_threshold):
+                    df[variable] !=
+                    "http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031").sum() <= sample_size_threshold):
                 warn(
                     f"Descriptive statistics for {variable} were not computed because "
                     f"the number of samples is too small (n <= {sample_size_threshold})")
@@ -124,11 +125,19 @@ def retrieve_categorical_descriptives(df: pd.DataFrame, variables_to_describe: d
         for outlier in outliers:
             del value_counts[outlier]
 
+        # Count the occurrences of 'true_na'
+        if value_counts.get('_true_missing_'):
+            true_na_count = value_counts.get('_true_missing_')
+            # Delete it from the value counts for cleanliness
+            del value_counts['_true_missing_']
+        else:
+            true_na_count = 0
+
         # Store the value counts and the sum of outliers in the dictionary
         categorical_descriptives[column_name] = {
             "value_counts": value_counts,
             "outliers": sum(outliers.values()),
-            "nan": int(df[column_name].isna().sum())
+            "nan": true_na_count
         }
 
     # Prepare the data for the final DataFrame
@@ -149,17 +158,17 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
     """
     Retrieve descriptive statistics for numerical variables in a DataFrame.
 
-    This function processes numerical columns in the provided DataFrame, 
+    This function processes numerical columns in the provided DataFrame,
     removes outliers based on the provided range tuple,
     and returns a DataFrame with the statistics for each numerical variable.
 
     Parameters:
     df (pd.DataFrame): The input DataFrame containing the data.
-    variables_to_describe (dict): A dictionary where keys are column names and 
+    variables_to_describe (dict): A dictionary where keys are column names and
     values are dictionaries containing inliers.
 
     Returns:
-    pd.DataFrame: A DataFrame with columns "variable", "statistic", 
+    pd.DataFrame: A DataFrame with columns "variable", "statistic",
     and "value" representing the statistics for each numerical variable.
     """
     numerical_columns = df.select_dtypes(include=["number"]).columns
@@ -170,7 +179,15 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
     # Compute the descriptive statistics for the numerical columns
     for column_name in numerical_columns:
         info(f"Numerical column {column_name} is being described")
+
         column_values = df[column_name]
+
+        # Count the occurrences of the numerical placeholder
+        true_na_count = (column_values == -9999999999999999999999999999).sum()
+
+        # Replace the numerical placeholder with pd.NA
+        column_values = column_values.replace(-9999999999999999999999999999, pd.NA)
+
         inliers_range = variables_to_describe[column_name].get("inliers", (float("-inf"), float("inf")))
 
         # Check if inliers is a tuple of two values
@@ -192,7 +209,7 @@ def retrieve_numerical_descriptives(df: pd.DataFrame, variables_to_describe: dic
             (column_name, "mean", float(inlier_values.mean())),
             (column_name, "q3", float(q3)),
             (column_name, "max", float(inlier_values.max())),
-            (column_name, "nan", int(column_values.isna().sum())),
+            (column_name, "nan", true_na_count),
             (column_name, "sum", float(inlier_values.sum())),
             (column_name, "count", int(inlier_values.count())),
             (column_name, "sq_dev_sum", float((inlier_values - inlier_values.mean()).pow(2).sum())),
@@ -277,7 +294,8 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
                         result_df = result_df.rename(columns={'value': variable})
 
                     # Replace specific ontology URI with NA
-                    result_df = result_df.replace("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031", pd.NA)
+                    result_df = result_df.replace("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031",
+                                                  "_true_missing_")
 
             elif variable_info["datatype"] == "numerical":
                 # Prepare and execute numerical query
@@ -290,6 +308,10 @@ def collect_sparql_data(df: pd.DataFrame, variables_to_describe: dict) -> pd.Dat
                     result_df = pd.DataFrame(result)
                     result_df['patient_id'] = result_df.index
                     result_df = result_df.rename(columns={'value': variable})
+                    # Replace specific ontology URI with NA
+                    result_df = result_df.replace("http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C54031",
+                                                  -9999999999999999999999999999)
+                    result_df.fillna(-9999999999999999999999999999, inplace=True)
 
             # Combine results using outer join to preserve all patient data
             if not result_df.empty:

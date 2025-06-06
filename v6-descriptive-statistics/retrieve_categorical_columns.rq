@@ -8,13 +8,13 @@ PREFIX sct: <http://snomed.info/id/>
 PREFIX strongaya: <http://strongaya.eu/>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?patient ?sub_class (SAMPLE(?value) AS ?any_value)
+SELECT DISTINCT ?patient ?sub_class (SAMPLE(?all_values) AS ?value)
 WHERE {
     ?patient sio:SIO_000008 ?sub_class_type .
     ?sub_class_type rdf:type ?main_class .
     ?sub_class_type rdf:type PLACEHOLDER_CLASS .
     ?sub_class_type dbo:has_cell ?sub_cell .
-    ?sub_cell dbo:has_value ?value .
+    ?sub_cell dbo:has_value ?all_values .
 
     FILTER strStarts(str
     ( ?main_class), str(PLACEHOLDER_ONTOLOGY))

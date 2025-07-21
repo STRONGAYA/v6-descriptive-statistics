@@ -9,16 +9,15 @@ from vantage6_strongaya_general.general_statistics import compute_local_general_
     compute_local_adjusted_deviation
 from vantage6_strongaya_general.miscellaneous import (apply_data_stratification, set_datatypes, safe_log,
                                                       VariableDetails, StratificationDetails)
-from vantage6_strongaya_general.privacy_measures import apply_sample_size_threshold, mask_unnecessary_variables, \
-    apply_differential_privacy
+from vantage6_strongaya_general.privacy_measures import apply_sample_size_threshold, mask_unnecessary_variables
 from vantage6_strongaya_rdf.collect_sparql_data import collect_sparql_data
 
 
 @data(1)
 @algorithm_client
 def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
-                                         variables_to_describe: Dict[str, VariableDetails],
-                                         variables_to_stratify: StratificationDetails = None) -> Dict[str, str]:
+                               variables_to_describe: Dict[str, VariableDetails],
+                               variables_to_stratify: StratificationDetails = None) -> Dict[str, str]:
     """
     Execute the partial algorithm for general statistics computation.
 
@@ -45,15 +44,12 @@ def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
     """
     safe_log("info", "Executing partial algorithm for general statistics computation.")
 
-    # Collect the variable names
-    variables_to_describe_list = list(variables_to_describe.keys())
-
     # Add the variables to stratify to the variables to analyse
     if variables_to_stratify is not None:
-        variables_to_analyse = variables_to_describe_list + [variable_to_stratify for variable_to_stratify
-                                                             in variables_to_stratify.keys()]
+        variables_to_analyse = list(variables_to_describe.keys()) + [variable_to_stratify for variable_to_stratify
+                                                                     in variables_to_stratify.keys()]
     else:
-        variables_to_analyse = variables_to_describe_list
+        variables_to_analyse = list(variables_to_describe.keys())
 
     # Retrieve RDF/SPARQL data if its use is indicated in the data - suboptimal solution, to be improved in the future
     if "endpoint" in df.columns:
@@ -64,12 +60,10 @@ def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
 
     # Add the variables to stratify details to the variables to analyse details
     if variables_to_stratify is not None:
-        variable_details = variables_to_describe | variables_to_stratify
-    else:
-        variable_details = variables_to_describe
+        variables_to_describe = variables_to_describe | variables_to_stratify
 
     # Set datatypes for each variable
-    df = set_datatypes(df, variable_details)
+    df = set_datatypes(df, variables_to_describe)
 
     # Apply stratification if necessary
     df = apply_data_stratification(df, variables_to_stratify)
@@ -78,7 +72,7 @@ def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
     df = apply_sample_size_threshold(client, df, variables_to_analyse)
 
     # Compute general statistics
-    result = compute_local_general_statistics(df, variable_details)
+    result = compute_local_general_statistics(df, variables_to_describe)
 
     return result
 
@@ -86,9 +80,9 @@ def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
 @data(1)
 @algorithm_client
 def partial_aggregate_adjusted_deviation(client: AlgorithmClient, df: pd.DataFrame,
-                                                   variables_to_describe: Dict[str, VariableDetails],
-                                                   numerical_aggregated_results: Dict[str, str],
-                                                   variables_to_stratify: StratificationDetails = None) -> dict[
+                                         variables_to_describe: Dict[str, VariableDetails],
+                                         numerical_aggregated_results: Dict[str, str],
+                                         variables_to_stratify: StratificationDetails = None) -> dict[
     str, str]:
     """
     Execute the partial algorithm for aggregate-adjusted deviation computation.
@@ -116,13 +110,12 @@ def partial_aggregate_adjusted_deviation(client: AlgorithmClient, df: pd.DataFra
     """
     safe_log("info", "Executing partial algorithm to compute the aggregate adjusted deviation.")
 
-    # Collect the variable names
-    variables_to_describe_list = list(variables_to_describe.keys())
-
     # Add the variables to stratify to the variables to analyse
     if variables_to_stratify is not None:
-        variables_to_analyse = variables_to_describe_list + [variable_to_stratify for variable_to_stratify
-                                                             in variables_to_stratify.keys()]
+        variables_to_analyse = list(variables_to_describe.keys()) + [variable_to_stratify for variable_to_stratify
+                                                                     in variables_to_stratify.keys()]
+    else:
+        variables_to_analyse = list(variables_to_describe.keys())
 
     # Retrieve RDF/SPARQL data if its use is indicated in the data - suboptimal solution, to be improved in the future
     if "endpoint" in df.columns:
@@ -133,12 +126,10 @@ def partial_aggregate_adjusted_deviation(client: AlgorithmClient, df: pd.DataFra
 
     # Add the variables to stratify details to the variables to analyse details
     if variables_to_stratify is not None:
-        variable_details = variables_to_describe | variables_to_stratify
-    else:
-        variable_details = variables_to_describe
+        variables_to_describe = variables_to_describe | variables_to_stratify
 
     # Set datatypes for each variable
-    df = set_datatypes(df, variable_details)
+    df = set_datatypes(df, variables_to_describe)
 
     # Apply stratification if necessary
     df = apply_data_stratification(df, variables_to_stratify)

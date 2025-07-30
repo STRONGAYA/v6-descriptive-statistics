@@ -10,7 +10,6 @@ from vantage6_strongaya_general.general_statistics import compute_local_general_
 from vantage6_strongaya_general.miscellaneous import (apply_data_stratification, set_datatypes, safe_log,
                                                       VariableDetails, StratificationDetails)
 from vantage6_strongaya_general.privacy_measures import apply_sample_size_threshold, mask_unnecessary_variables
-from vantage6_strongaya_rdf.collect_sparql_data import collect_sparql_data
 
 
 @data(1)
@@ -50,10 +49,6 @@ def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
                                                                      in variables_to_stratify.keys()]
     else:
         variables_to_analyse = list(variables_to_describe.keys())
-
-    # Retrieve RDF/SPARQL data if its use is indicated in the data - suboptimal solution, to be improved in the future
-    if "endpoint" in df.columns:
-        df = collect_sparql_data(variables_to_analyse, endpoint=df["endpoint"].iloc[0])
 
     # Mask unnecessary variables by removal - relevant, for example, with csv data
     df = mask_unnecessary_variables(df, variables_to_analyse)
@@ -116,10 +111,6 @@ def partial_aggregate_adjusted_deviation(client: AlgorithmClient, df: pd.DataFra
                                                                      in variables_to_stratify.keys()]
     else:
         variables_to_analyse = list(variables_to_describe.keys())
-
-    # Retrieve RDF/SPARQL data if its use is indicated in the data - suboptimal solution, to be improved in the future
-    if "endpoint" in df.columns:
-        df = collect_sparql_data(variables_to_analyse, endpoint=df["endpoint"].iloc[0])
 
     # Mask unnecessary variables by removal - relevant, for example, with csv data
     df = mask_unnecessary_variables(df, variables_to_analyse)

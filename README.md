@@ -3,17 +3,13 @@
 
 ## Testing Status
 
-![Tests](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Comprehensive%20Test%20Suite/badge.svg?branch=revamped-version)
+![Tests](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Test%20Suite/badge.svg?branch=revamped-version)
 ![Coverage](https://raw.githubusercontent.com/STRONGAYA/v6-descriptive-statistics/revamped-version/tests/coverage-badge.svg)
-![Black](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Black%20Code%20Formatter/badge.svg?branch=revamped-version)
-![Flake8](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Flake8%20Linter/badge.svg?branch=revamped-version)
-![MyPy](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/MyPy%20Type%20Checker/badge.svg?branch=revamped-version)
-![Bandit](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Bandit%20Security%20Scanner/badge.svg?branch=revamped-version)
-![Safety](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Safety%20Vulnerability%20Scanner/badge.svg?branch=revamped-version)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Vantage6 4.1.0+](https://img.shields.io/badge/vantage6-4.1.0%2B%20%7C%204.2.0%2B-brightgreen.svg)](https://vantage6.ai)
 [![Licence](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Vantage6 algorithm that retrieves descriptive statistics with comprehensive testing and production-grade CI/CD.
+Vantage6 algorithm that retrieves descriptive statistics with comprehensive Vantage6 integration testing.
 
 This algorithm is designed to be run with the [vantage6](https://vantage6.ai)
 infrastructure for distributed analysis and learning.
@@ -22,12 +18,18 @@ The base code for this algorithm has been created via the
 [v6-algorithm-template](https://github.com/vantage6/v6-algorithm-template)
 template generator.
 
+## Tested Vantage6 Versions
+
+This algorithm is continuously tested against the following Vantage6 versions:
+- **Vantage6 4.2.0** - Latest stable version
+- **Vantage6 4.1.0** - Previous stable version
+
 ## Features
 
-- **Production-Grade Testing**: Comprehensive pytest-based framework with unit, integration, and empirical tests
-- **Vantage6 Integration**: Full integration testing with Vantage6 demo network and MDW infrastructure
-- **Quality Assurance**: Automated code quality checks with Black, Flake8, and MyPy
-- **Security Scanning**: Bandit and Safety security vulnerability scanning
+- **Vantage6 Integration Testing**: Complete developer network setup, Docker container validation, and algorithm execution testing
+- **Algorithm Functionality Testing**: Unit tests for core algorithm functions and statistical computations
+- **Quality Assurance**: Automated code quality checks with Black, Flake8, MyPy, Bandit, and Safety
+- **Docker Integration**: Automated Docker build and deployment validation
 - **Docker Support**: Validated Docker builds and deployment testing
 - **Empirical Validation**: Federated vs centralised computation equivalence testing
 - **Edge Case Coverage**: Comprehensive testing of edge cases and error conditions
@@ -75,12 +77,17 @@ pytest -m vantage6      # Vantage6 integration tests only
 pytest -m docker        # Docker-related tests only
 pytest -m edge_case     # Edge case tests only
 
+# Run all tests
+pytest
+
 # Run with coverage report
 pytest --cov=v6_descriptive_statistics --cov-report=html
 
-# Run specific test files
-pytest tests/unit/test_algorithm_functions.py
-pytest tests/integration/test_algorithm_workflows.py
+# Run specific test categories
+pytest -m unit          # Unit tests only
+pytest -m integration   # Integration tests only
+pytest -m vantage6      # Vantage6 integration tests
+pytest -m docker        # Docker tests
 
 # Run with verbose output
 pytest -v
@@ -88,52 +95,56 @@ pytest -v
 
 ### Test Categories
 
-- **Unit Tests**: Test individual functions in isolation with mocked dependencies
-- **Integration Tests**: Test complete algorithm workflows using MockAlgorithmClient
-- **Empirical Tests**: Validate federated vs centralised mathematical equivalence
-- **Vantage6 Tests**: Test integration with Vantage6 demo network and MDW infrastructure
-- **Docker Tests**: Validate Docker builds and container execution
-- **Edge Case Tests**: Test behavior with unusual data distributions and error conditions
+- **Unit Tests**: Test core algorithm functions and statistical computations
+- **Integration Tests**: Test complete Vantage6 developer network workflow including:
+  - Demo network setup and teardown
+  - Docker container validation (3 nodes, server, algorithm store)
+  - Algorithm build and deployment
+  - Task execution and result validation
+  - Network cleanup
 
 ### Vantage6 Integration Testing
 
-The test suite includes comprehensive integration testing with:
+The test suite implements a comprehensive Vantage6 integration workflow:
 
-#### Vantage6 Demo Network
+#### Vantage6 Developer Network Testing
 ```bash
-# Setup demo network (requires vantage6 CLI)
-v6 dev create-demo-network
-v6 dev start-demo-network
+# The integration tests automatically:
+# 1. Set up vantage6 developer network
+# 2. Verify Docker containers are spawned correctly
+# 3. Build algorithm locally (without uploading)
+# 4. Run tasks on the developer network
+# 5. Assert results match expected central values
+# 6. Clean up network after testing
 
-# Run integration tests
-pytest -m vantage6 tests/integration/test_vantage6_integration.py
+# Run integration tests (requires Docker and vantage6 CLI)
+pytest -m integration tests/test_vantage6_integration.py
 ```
 
-#### MDW Infrastructure
-Tests include compatibility validation with the MDW Vantage6 testing infrastructure ([mdw-nl/v6-infrastructure-sh](https://github.com/mdw-nl/v6-infrastructure-sh)).
+#### Tested Workflow
+1. **Network Setup**: `v6 dev create-demo-network` and `v6 dev start-demo-network`
+2. **Container Validation**: Verify 3 nodes + server + algorithm store containers
+3. **Local Build**: Build algorithm Docker image without repository upload
+4. **Task Execution**: Run algorithm on developer network with test data
+5. **Result Validation**: Compare federated results with expected central values
+6. **Cleanup**: `v6 dev stop-demo-network` and `v6 dev remove-demo-network`
 
-### Edge Cases Covered
+#### Docker Integration
+- Algorithm Docker image build validation
+- Container execution testing
+- Multi-version compatibility testing
 
-- **Small Datasets**: Testing with minimal sample sizes
-- **Missing Data**: Handling of datasets with missing values
-- **Heterogeneous Data**: Different data distributions across organizations
-- **Outliers**: Datasets containing extreme values
-- **Single Organization**: Federated scenarios with only one participant
-- **No Variance**: Datasets where all values are identical
+### Statistical Validation
 
-### Empirical Validation
-
-The test suite validates that federated computations produce mathematically equivalent results to their centralised counterparts:
+Tests validate that federated computations produce mathematically equivalent results to centralised approaches (note: quantiles may differ due to federated nature):
 
 ```python
-# Example: Testing federated statistics match centralised
 def test_federated_equals_centralised():
     # Split data across organizations
     federated_data = split_by_organisation(test_data)
     
-    # Compute federated results
-    local_results = [compute_local_stats(org_data) for org_data in federated_data]
-    federated_result = aggregate_results(local_results)
+    # Run federated algorithm via Vantage6
+    federated_result = run_vantage6_task(federated_data)
     
     # Compute centralised result
     centralised_result = compute_centralised_stats(combined_data)

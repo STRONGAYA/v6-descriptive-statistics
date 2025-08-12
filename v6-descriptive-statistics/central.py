@@ -10,7 +10,7 @@ from vantage6_strongaya_general.miscellaneous import (collect_organisation_ids, 
 from vantage6_strongaya_general.general_statistics import compute_aggregate_general_statistics, \
     compute_aggregate_adjusted_deviation
 
-from .miscellaneous import check_input_structure
+from miscellaneous import check_input_structure
 
 
 @algorithm_client

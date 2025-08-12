@@ -22,7 +22,7 @@ setup(
         'pandas',
         'requests',
         'numpy',
-        "vantage6-strongaya-general @ git+https://github.com/STRONGAYA/v6-tools-general.git@v0.1.3",
-        "vantage6-strongaya-rdf @ git+https://github.com/STRONGAYA/v6-tools-rdf.git@v0.1.1",
+        "vantage6-strongaya-general @ git+https://github.com/STRONGAYA/v6-tools-general.git@v1.0.0",
+        "vantage6-strongaya-rdf @ git+https://github.com/STRONGAYA/v6-tools-rdf.git@v0.1.2",
     ]
 )

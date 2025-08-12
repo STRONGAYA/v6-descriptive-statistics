@@ -1,7 +1,10 @@
-# basic python3 image as base
+# Basic python3 image as base
 FROM harbor2.vantage6.ai/infrastructure/algorithm-base:4.11
 
-# install federated algorithm
+# Install git and other dependencies
+RUN apt-get update && apt-get install -y git && apt-get clean
+
+# Install federated algorithm
 COPY . /app
 RUN pip install /app
 
@@ -10,4 +13,4 @@ ENV PKG_NAME=${PKG_NAME}
 
 # Tell docker to execute `wrap_algorithm()` when the image is run.
 # This function will ensure that the algorithm method is called properly.
-CMD python -c "from vantage6.algorithm.tools.wrap import wrap_algorithm; wrap_algorithm()"
+CMD ["python", "-c", "from vantage6.algorithm.tools.wrap import wrap_algorithm; wrap_algorithm()"]

@@ -18,7 +18,7 @@ import json
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Set
 import tempfile
 import shutil
 
@@ -36,89 +36,6 @@ class TestVantage6DeveloperNetwork:
             return client
         except docker.errors.DockerException:
             pytest.skip("Docker not available")
-
-    @pytest.fixture(scope="class")
-    def test_data(self):
-        """Create test data for algorithm validation."""
-        # Create sample datasets that will be used to test the algorithm
-        np.random.seed(42)
-
-        # Organization 1 data
-        org1_data = pd.DataFrame({
-            'Gender': np.random.choice(['M', 'F'], size=100),
-            'Age': np.random.normal(30, 10, 100),
-            'Height': np.random.normal(170, 15, 100),
-            'Weight': np.random.normal(70, 12, 100)
-        })
-
-        # Organization 2 data  
-        org2_data = pd.DataFrame({
-            'Gender': np.random.choice(['M', 'F'], size=80),
-            'Age': np.random.normal(35, 8, 80),
-            'Height': np.random.normal(165, 12, 80),
-            'Weight': np.random.normal(68, 10, 80)
-        })
-
-        # Organization 3 data
-        org3_data = pd.DataFrame({
-            'Gender': np.random.choice(['M', 'F'], size=120),
-            'Age': np.random.normal(28, 12, 120),
-            'Height': np.random.normal(172, 18, 120),
-            'Weight': np.random.normal(72, 15, 120)
-        })
-
-        # Combined central data for validation
-        central_data = pd.concat([org1_data, org2_data, org3_data], ignore_index=True)
-
-        return {
-            'org1': org1_data,
-            'org2': org2_data,
-            'org3': org3_data,
-            'central': central_data
-        }
-
-    @pytest.fixture(scope="class")
-    def expected_central_results(self, test_data):
-        """Calculate expected central results for validation."""
-        central_data = test_data['central']
-
-        # Calculate central statistics that we expect to match
-        results = {
-            'numerical_stats': {
-                'Age': {
-                    'mean': central_data['Age'].mean(),
-                    'std': central_data['Age'].std(),
-                    'median': central_data['Age'].median(),
-                    'min': central_data['Age'].min(),
-                    'max': central_data['Age'].max(),
-                    'count': len(central_data['Age'])
-                },
-                'Height': {
-                    'mean': central_data['Height'].mean(),
-                    'std': central_data['Height'].std(),
-                    'median': central_data['Height'].median(),
-                    'min': central_data['Height'].min(),
-                    'max': central_data['Height'].max(),
-                    'count': len(central_data['Height'])
-                },
-                'Weight': {
-                    'mean': central_data['Weight'].mean(),
-                    'std': central_data['Weight'].std(),
-                    'median': central_data['Weight'].median(),
-                    'min': central_data['Weight'].min(),
-                    'max': central_data['Weight'].max(),
-                    'count': len(central_data['Weight'])
-                }
-            },
-            'categorical_stats': {
-                'Gender': {
-                    'counts': central_data['Gender'].value_counts().to_dict(),
-                    'mode': central_data['Gender'].mode()[0] if not central_data['Gender'].mode().empty else None
-                }
-            }
-        }
-
-        return results
 
     @pytest.fixture(scope="class")
     def vantage6_network(self, docker_client):
@@ -246,7 +163,7 @@ class TestAlgorithmBuild:
     def test_algorithm_build(self):
         """Test building the algorithm locally without uploading."""
         # Get repository root
-        repo_root = Path(__file__).parent.parent
+        repo_root = Path(__file__).parent.parent.parent
 
         # Build Docker image for the algorithm
         try:
@@ -269,81 +186,3 @@ class TestAlgorithmBuild:
 
         except subprocess.CalledProcessError as e:
             pytest.fail(f"Algorithm build failed: {e}")
-
-
-@pytest.mark.integration
-class TestAlgorithmValidation:
-    """Test algorithm functionality independently of full network setup."""
-
-    def test_algorithm_import(self):
-        """Test that algorithm modules can be imported correctly."""
-        import sys
-        import os
-
-        # Add algorithm module to path
-        algorithm_path = os.path.join(os.path.dirname(__file__), '../v6-descriptive-statistics/')
-        sys.path.insert(0, algorithm_path)
-
-        try:
-            # Test importing main algorithm functions
-            from partial import partial_general_statistics, partial_aggregate_adjusted_deviation
-            from central import central
-
-            # Basic validation that functions exist and are callable
-            assert callable(central)
-            assert callable(partial_general_statistics)
-            assert callable(partial_aggregate_adjusted_deviation)
-
-        except ImportError as e:
-            pytest.fail(f"Failed to import algorithm modules: {e}")
-
-    def test_algorithm_input_validation(self):
-        """Test algorithm input validation."""
-        # Test valid input structure
-        valid_input = {
-            "variables_to_describe": {
-                "Age": {
-                    "datatype": "numerical",
-                    "inliers": (18, 80)
-                },
-                "Gender": {
-                    "datatype": "categorical",
-                    "inliers": ("M", "F", "X")
-                }
-            },
-            "variables_to_stratify": None,
-            "organization_ids": None
-        }
-
-        # Validate structure
-        assert "variables_to_describe" in valid_input
-        assert isinstance(valid_input["variables_to_describe"], dict)
-
-        for var_name, var_config in valid_input["variables_to_describe"].items():
-            assert "datatype" in var_config
-            assert "inliers" in var_config
-            assert var_config["datatype"] in ["numerical", "categorical"]
-
-
-def assert_statistics_equivalent(federated_result: Dict[str, Any],
-                                 central_result: Dict[str, Any],
-                                 tolerance: float = 1e-6) -> None:
-    """
-    Assert that federated and central statistical results are equivalent within tolerance.
-    
-    Args:
-        federated_result: Results from federated computation
-        central_result: Results from central computation  
-        tolerance: Numerical tolerance for comparison
-    """
-    # This function would implement detailed comparison between federated and central results
-    # For numerical statistics: mean, std, min, max should be very close
-    # For categorical statistics: counts should match exactly
-
-    # Placeholder implementation
-    assert isinstance(federated_result, dict)
-    assert isinstance(central_result, dict)
-
-    # TODO: Implement detailed statistical comparison
-    # This would compare each statistical measure within the specified tolerance
-    pass

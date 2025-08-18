@@ -1,0 +1,101 @@
+Name,Latin Name,Size (cm),Habitat,Lifespan (years),Temperature Tolerance (K),Mobility,Social Structure,Reproduction Rate
+Briny Skater,Aquaanus,34,Ice Caves,2,50,Crawling,Solitary,14
+Ice Crawler,Glacinus,74,Ice Caves,27,83,Floating,Swarm,1
+Permafrost Roamer,Brinyus,62,Underground,10,145,Floating,Solitary,3
+Geyser Jumper,Titaanus,14,Ice Caves,2,175,Crawling,Swarm,13
+Subzero Flier,Frostorus,95,Underground,26,167,Floating,Swarm,13
+Chasm Drifter,Frostensis,48,Subsurface Ocean,17,97,Swimming,Solitary,4
+Permafrost Roamer,Permaeus,15,Underground,8,138,Swimming,Colony,14
+Deep Divulger,Hydroum,72,Ice Caves,1,166,Floating,Swarm,1
+Briny Skater,Hydroius,78,Subsurface Ocean,9,178,Swimming,Solitary,1
+Polar Shifter,Frostinus,87,Subsurface Ocean,11,65,Floating,Solitary,8
+Cryovore,Permaus,62,Subsurface Ocean,22,118,Swimming,Colony,2
+Briny Skater,Permaanus,40,Underground,16,71,Swimming,Swarm,12
+Subzero Flier,Hydroensis,85,Ice Caves,7,142,Floating,Swarm,8
+Subzero Flier,Permaeus,80,Subsurface Ocean,29,125,Swimming,Solitary,7
+Chasm Drifter,Hydroaris,82,Subsurface Ocean,10,193,Floating,Solitary,10
+Deep Divulger,Titaanus,53,Subsurface Ocean,23,135,Swimming,Colony,10
+Ice Crawler,Methius,24,Underground,26,78,Swimming,Colony,2
+Chasm Drifter,Frostus,26,Underground,3,118,Crawling,Swarm,6
+Chasm Drifter,Glacus,89,Ice Caves,18,96,Crawling,Swarm,6
+Cryovore,Titaus,60,Underground,25,143,Floating,Solitary,3
+Frost Lurker,Permaanus,41,Subsurface Ocean,24,193,Crawling,Swarm,11
+Deep Divulger,Brinyorus,29,Ice Caves,13,134,Floating,Colony,2
+Glacierian,Hydroum,15,Subsurface Ocean,28,88,Crawling,Colony,12
+Chasm Drifter,Glacorus,45,Subsurface Ocean,26,149,Swimming,Solitary,1
+Rime Strider,Aquaus,65,Underground,7,82,Floating,Colony,6
+Abyssal Wanderer,Methinus,89,Ice Caves,25,150,Floating,Colony,12
+Frost Lurker,Frostum,71,Underground,4,72,Swimming,Colony,5
+Glacierian,Metharis,9,Underground,13,59,Floating,Colony,14
+Rime Strider,Methius,88,Ice Caves,20,118,Floating,Solitary,14
+Deep Divulger,Euroum,1,Subsurface Ocean,1,149,Crawling,Solitary,11
+Europan Swimmer,Methinus,8,Subsurface Ocean,8,83,Floating,Swarm,9
+Rime Strider,Permaanus,88,Ice Caves,14,187,Swimming,Colony,1
+Polar Shifter,Methinus,63,Subsurface Ocean,16,196,Crawling,Swarm,7
+Frost Lurker,Glacinus,11,Ice Caves,14,145,Crawling,Solitary,5
+Permafrost Roamer,Brinyus,81,Ice Caves,12,50,Swimming,Solitary,5
+Rime Strider,Hydroum,8,Underground,19,118,Swimming,Solitary,14
+Aqua Sprout,Frostinus,35,Ice Caves,23,53,Crawling,Solitary,2
+Europan Swimmer,Cryoorus,35,Underground,15,65,Floating,Solitary,11
+Subzero Flier,Brinyorus,33,Subsurface Ocean,28,73,Crawling,Solitary,3
+Subzero Flier,Methius,5,Subsurface Ocean,2,129,Swimming,Solitary,7
+Geyser Jumper,Euroaris,41,Subsurface Ocean,2,51,Crawling,Colony,6
+Polar Shifter,Euroum,28,Subsurface Ocean,23,177,Swimming,Swarm,12
+Rime Strider,Aquaensis,7,Underground,22,133,Crawling,Solitary,2
+Rime Strider,Glaceus,73,Subsurface Ocean,19,189,Floating,Colony,6
+Geyser Jumper,Cryous,72,Ice Caves,25,173,Crawling,Colony,2
+Abyssal Wanderer,Frostensis,12,Ice Caves,26,82,Crawling,Swarm,2
+Abyssal Wanderer,Aquainus,34,Ice Caves,29,150,Swimming,Solitary,2
+Geyser Jumper,Brinyus,33,Underground,22,61,Swimming,Swarm,14
+Abyssal Wanderer,Aquaius,48,Subsurface Ocean,26,116,Swimming,Solitary,11
+Cryovore,Brinyensis,23,Subsurface Ocean,26,114,Crawling,Colony,3
+Rime Strider,Methorus,62,Subsurface Ocean,22,123,Floating,Colony,2
+Briny Skater,Cryoanus,88,Underground,17,92,Swimming,Colony,4
+Ice Crawler,Hydroanus,37,Ice Caves,20,93,Swimming,Colony,9
+Aqua Sprout,Aquaorus,99,Ice Caves,10,78,Crawling,Swarm,6
+Cryovore,Titaanus,44,Subsurface Ocean,6,190,Swimming,Solitary,1
+Deep Divulger,Aquaius,86,Ice Caves,15,61,Floating,Solitary,8
+Cryovore,Glacus,91,Ice Caves,22,144,Floating,Swarm,12
+Briny Skater,Permaorus,35,Underground,11,95,Swimming,Solitary,14
+Deep Divulger,Euroix,65,Underground,28,179,Swimming,Colony,7
+Aqua Sprout,Methanus,99,Underground,5,84,Crawling,Solitary,10
+Briny Skater,Methinus,47,Underground,1,130,Floating,Colony,3
+Glacierian,Aquaeus,78,Subsurface Ocean,8,139,Floating,Swarm,1
+Ice Crawler,Titaum,3,Underground,21,57,Swimming,Solitary,5
+Aqua Sprout,Titaus,1,Ice Caves,28,142,Crawling,Swarm,13
+Rime Strider,Metharis,5,Subsurface Ocean,12,139,Floating,Solitary,4
+Abyssal Wanderer,Cryous,90,Ice Caves,12,164,Floating,Colony,10
+Glacierian,Cryoum,14,Ice Caves,5,154,Crawling,Swarm,8
+Polar Shifter,Frostorus,27,Ice Caves,7,184,Crawling,Solitary,1
+Aqua Sprout,Titaorus,9,Underground,4,107,Floating,Colony,10
+Polar Shifter,Cryoorus,79,Underground,6,163,Floating,Swarm,1
+Deep Divulger,Aquaius,15,Subsurface Ocean,13,124,Crawling,Swarm,12
+Glacierian,Glacorus,90,Subsurface Ocean,20,169,Floating,Solitary,4
+Ice Crawler,Permaeus,42,Underground,15,70,Swimming,Solitary,8
+Rime Strider,Metharis,77,Ice Caves,3,187,Swimming,Solitary,5
+Geyser Jumper,Hydroum,51,Subsurface Ocean,23,150,Crawling,Colony,2
+Rime Strider,Permaix,63,Underground,8,148,Crawling,Solitary,6
+Briny Skater,Aquaorus,96,Underground,20,85,Crawling,Swarm,5
+Rime Strider,Permaius,52,Underground,16,145,Swimming,Swarm,2
+Permafrost Roamer,Frostorus,96,Ice Caves,13,86,Floating,Solitary,13
+Chasm Drifter,Glacaris,4,Underground,18,61,Swimming,Solitary,14
+Geyser Jumper,Methanus,94,Underground,28,162,Floating,Swarm,11
+Cryovore,Aquainus,23,Underground,10,62,Swimming,Colony,11
+Abyssal Wanderer,Glacaris,15,Underground,19,72,Floating,Solitary,11
+Europan Swimmer,Titainus,43,Subsurface Ocean,17,148,Swimming,Solitary,3
+Ice Crawler,Brinyeus,29,Subsurface Ocean,24,154,Crawling,Swarm,9
+Glacierian,Hydroeus,36,Underground,19,79,Swimming,Solitary,7
+Chasm Drifter,Methus,13,Ice Caves,28,66,Floating,Colony,7
+Ice Crawler,Frostus,32,Subsurface Ocean,26,162,Swimming,Swarm,11
+Glacierian,Glacaris,71,Underground,23,111,Swimming,Solitary,6
+Abyssal Wanderer,Titaus,59,Subsurface Ocean,26,133,Swimming,Swarm,8
+Frost Lurker,Euroum,86,Subsurface Ocean,5,161,Crawling,Solitary,4
+Frost Lurker,Methorus,28,Ice Caves,26,135,Swimming,Solitary,8
+Polar Shifter,Cryous,66,Underground,21,190,Crawling,Solitary,4
+Ice Crawler,Titaensis,42,Underground,23,68,Crawling,Colony,8
+Frost Lurker,Aquaensis,45,Ice Caves,9,149,Swimming,Colony,9
+Permafrost Roamer,Brinyaris,62,Ice Caves,12,189,Swimming,Swarm,3
+Geyser Jumper,Aquaorus,57,Underground,21,196,Swimming,Solitary,3
+Glacierian,Aquaus,6,Underground,1,125,Floating,Solitary,11
+Polar Shifter,Aquainus,28,Ice Caves,26,58,Swimming,Colony,13
+Rime Strider,Brinyaris,28,Subsurface Ocean,26,77,Crawling,Solitary,2

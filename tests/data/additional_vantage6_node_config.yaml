@@ -1,0 +1,11 @@
+# Any configurations provided below are added through to the configuration file using the vantage6 developer network setup.
+# algorithm_policies are added dynamically as the name of the to-build algorithm is determined dynamically;
+# see 'extra_node_config_file' in confest.py for more details.
+
+policies:
+  allowed_algorithms:
+    # Developer network start-up test
+    - ^hello-world$
+    # v6-descriptive-statistics:ci-test
+    - ^v6-descriptive-statistics:ci-test$
+  require_algorithm_pull: false

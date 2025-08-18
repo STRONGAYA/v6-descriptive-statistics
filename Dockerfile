@@ -1,6 +1,9 @@
 # Basic python3 image as base
 FROM harbor2.vantage6.ai/infrastructure/algorithm-base:4.11
 
+# This is a placeholder that should be overloaded by invoking docker build with '--build-arg PKG_NAME=...'
+ARG PKG_NAME="v6-descriptive-statistics"
+
 # Install git and other dependencies
 RUN apt-get update && apt-get install -y git && apt-get clean
 

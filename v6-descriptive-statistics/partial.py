@@ -60,6 +60,13 @@ def partial_general_statistics(client: AlgorithmClient, df: pd.DataFrame,
     # Set datatypes for each variable
     df = set_datatypes(df, variables_to_describe)
 
+    # Reformat the variables_to_stratify to the expected format after datatypes have been set
+    if variables_to_stratify is not None:
+        variables_to_stratify = {
+            variable: details["values"] if details.get("datatype") == "categorical" and "values" in details else details
+            for variable, details in variables_to_stratify.items()
+        }
+
     # Apply stratification if necessary
     df = apply_data_stratification(df, variables_to_stratify)
 
@@ -121,6 +128,13 @@ def partial_aggregate_adjusted_deviation(client: AlgorithmClient, df: pd.DataFra
 
     # Set datatypes for each variable
     df = set_datatypes(df, variables_to_describe)
+
+    # Reformat the variables_to_stratify to the expected format after datatypes have been set
+    if variables_to_stratify is not None:
+        variables_to_stratify = {
+            variable: details["values"] if details.get("datatype") == "categorical" and "values" in details else details
+            for variable, details in variables_to_stratify.items()
+        }
 
     # Apply stratification if necessary
     df = apply_data_stratification(df, variables_to_stratify)

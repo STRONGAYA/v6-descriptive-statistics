@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from vantage6.algorithm.tools.decorators import algorithm_client
-from vantage6.algorithm.tools.exceptions import UserInputError
+from vantage6.algorithm.tools.exceptions import UserInputError, CollectResultsError
 from vantage6.algorithm.client import AlgorithmClient
 
 # General federated algorithm functions
@@ -10,13 +10,13 @@ from vantage6_strongaya_general.miscellaneous import (collect_organisation_ids, 
 from vantage6_strongaya_general.general_statistics import compute_aggregate_general_statistics, \
     compute_aggregate_adjusted_deviation
 
-from miscellaneous import check_input_structure
+from .miscellaneous import check_input_structure
 
 
 @algorithm_client
 def central(client: AlgorithmClient, variables_to_describe: Dict[str, VariableDetails],
             variables_to_stratify: StratificationDetails = None,
-            organisation_ids: List[int] = None) -> Dict[str, Any]:
+            organisation_ids: List[int] = None, return_partials: bool = False) -> Dict[str, Any]:
     """
     Central function to aggregate descriptive statistics from multiple organisations.
 
@@ -39,6 +39,7 @@ def central(client: AlgorithmClient, variables_to_describe: Dict[str, VariableDe
                                                                     }
         organisation_ids (list[int], optional): List of organisation IDs to include.
                                                 Defaults to None - therewith including all organisations.
+        return_partials (bool, optional): Whether to return partial results. Defaults to False.
 
     Returns:
         Any: A dictionary containing the aggregated descriptive statistics and
@@ -70,8 +71,25 @@ def central(client: AlgorithmClient, variables_to_describe: Dict[str, VariableDe
     results_general_statistics = client.wait_for_results(task_general_statistics.get("id"))
     safe_log("info", f"Results of task {task_general_statistics.get('id')} obtained")
 
+    # Check if there is any result
+    if isinstance(results_general_statistics, list) and len(results_general_statistics) == 0:
+        raise CollectResultsError("Subtasks results are empty, "
+                                  "evaluate nodes' logs for more information or "
+                                  "consider relaxing input requirements such as stratification parameters.")
+    # If there is a result, but it does not contain the expected number of results, throw an error
+    elif isinstance(results_general_statistics, list) and len(results_general_statistics) != len(organisation_ids):
+        raise CollectResultsError("Not all organisation returned a result, "
+                                  "evaluate nodes' logs for more information or "
+                                  "consider relaxing input requirements such as stratification parameters.")
+    elif isinstance(results_general_statistics, list) and len(results_general_statistics) == len(organisation_ids):
+        safe_log("info", "All organisations returned results for the general statistics subtask.")
+    else:
+        raise CollectResultsError("Unexpected results format received from the general statistics subtask. "
+                                  "Please check the algorithm input or the nodes' logs for more information.")
+
     # Aggregate the general statistics
-    results_general_statistics = compute_aggregate_general_statistics(results_general_statistics)
+    results_general_statistics = compute_aggregate_general_statistics(results_general_statistics,
+                                                                      return_partials=return_partials)
 
     # Create a subtask to calculate aggregate-adjusted deviation; using the aggregated numerical general statistics
     safe_log("info", "Creating subtask to calculate aggregate-adjusted deviation using general statistics.")
@@ -97,4 +115,9 @@ def central(client: AlgorithmClient, variables_to_describe: Dict[str, VariableDe
     results = compute_aggregate_adjusted_deviation(results_deviation, results_general_statistics)
 
     # Return the final results of the algorithm
+    if return_partials:
+        results["partial_results"] = {
+            "general_statistics": results_general_statistics,
+            "aggregate_adjusted_deviation": results_deviation
+        }
     return results

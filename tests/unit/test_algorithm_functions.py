@@ -82,19 +82,3 @@ class TestAlgorithmFunctions:
 
         except ImportError:
             pytest.skip("Algorithm module not available")
-
-    def test_expected_output_structure(self):
-        """Test expected algorithm output structure."""
-        # Define expected output structure based on algorithm specification
-        expected_structure = {
-            "included_organisations": [],
-            "excluded_organisations": [],
-            "numerical_general_statistics": {},
-            "categorical_general_statistics": {}
-        }
-
-        # Validate structure
-        assert isinstance(expected_structure["included_organisations"], list)
-        assert isinstance(expected_structure["excluded_organisations"], list)
-        assert isinstance(expected_structure["numerical_general_statistics"], dict)
-        assert isinstance(expected_structure["categorical_general_statistics"], dict)

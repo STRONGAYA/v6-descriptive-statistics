@@ -13,7 +13,6 @@ import platform
 import socket
 import subprocess
 
-
 from vantage6.client import UserClient as Client
 from pathlib import Path
 from typing import Dict, Any, Set
@@ -322,8 +321,6 @@ def authentication(vantage6_network_session, docker_client) -> Client:
     time.sleep(10)
 
     vantage6_config = {
-        'collaboration': 1,
-        'aggregating_organisation': 1,
         'server_url': docker_client.docker_host,
         'server_port': 7601,
         'server_api': "/api",
@@ -353,29 +350,6 @@ def authentication(vantage6_network_session, docker_client) -> Client:
     assert vantage6_client.token, "Authentication token should be present and not empty"
 
     return vantage6_client
-
-
-@pytest.fixture
-def algorithm_variables_config():
-    """Standard variables configuration for algorithm testing."""
-    return {
-        "Gender": {
-            "datatype": "categorical",
-            "inliers": ("M", "F", "X")
-        },
-        "Age": {
-            "datatype": "numerical",
-            "inliers": (15, 80)
-        },
-        "Height(in)": {
-            "datatype": "numerical",
-            "inliers": (60, 80)
-        },
-        "Weight(lbs)": {
-            "datatype": "numerical",
-            "inliers": (100, 300)
-        }
-    }
 
 
 @pytest.fixture(scope="session")

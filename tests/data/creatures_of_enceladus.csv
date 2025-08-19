@@ -1,71 +1,71 @@
-Name,Latin Name,Size (cm),Habitat,Diet,Lifespan (years),Temperature Tolerance (K),Mobility,Social Structure,Reproduction Rate
-Subsurface Glider,Frostaris,18,Ice Caves,Organic Compounds,11,141,Swimming,Pack,1
-Chasm Skater,Frostensis,38,Subsurface Ocean,Chemosynthesis,5,150,Burrowing,Pack,5
-Hydrofloat,Hydroeus,15,Subsurface Ocean,Organic Compounds,20,93,Burrowing,Solitary,2
-Hydrofloat,Euroensis,64,Ice Caves,Chemosynthesis,11,150,Burrowing,Solitary,6
-Cryo Crawler,Hydroinus,28,Subsurface Ocean,Minerals,10,76,Floating,Colony,1
-Cryo Crawler,Aquaeus,74,Geysers,Organic Compounds,8,102,Floating,Colony,3
-Geyser Jumper,Methius,39,Geysers,Minerals,6,118,Swimming,Solitary,5
-Polar Roamer,Brinyus,57,Geysers,Chemosynthesis,6,167,Swimming,Colony,4
-Chasm Skater,Cryoum,17,Subsurface Ocean,Chemosynthesis,8,110,Floating,Solitary,3
-Subsurface Glider,Brinyeus,44,Geysers,Chemosynthesis,23,113,Floating,Pack,5
-Frost Swimmer,Glacius,25,Ice Caves,Minerals,15,83,Floating,Colony,8
-Cryo Crawler,Hydroensis,17,Ice Caves,Minerals,14,84,Burrowing,Colony,4
-Frost Swimmer,Glacanus,13,Subsurface Ocean,Minerals,11,130,Burrowing,Solitary,1
-Enceladus Burrower,Hydroinus,25,Ice Caves,Minerals,12,111,Floating,Colony,7
-Cryo Crawler,Frostaris,68,Ice Caves,Chemosynthesis,13,129,Burrowing,Colony,8
-Vent Lurker,Eurous,10,Subsurface Ocean,Chemosynthesis,8,176,Burrowing,Pack,3
-Polar Roamer,Titaorus,67,Geysers,Organic Compounds,18,147,Swimming,Colony,6
-Chasm Skater,Methius,18,Geysers,Organic Compounds,1,92,Floating,Pack,2
-Ice Cave Dweller,Cryoorus,34,Geysers,Minerals,15,108,Floating,Solitary,7
-Geyser Jumper,Frostaris,8,Subsurface Ocean,Chemosynthesis,8,88,Burrowing,Colony,8
-Enceladus Burrower,Brinyix,40,Ice Caves,Chemosynthesis,11,122,Floating,Pack,6
-Ice Cave Dweller,Cryous,42,Geysers,Chemosynthesis,12,166,Swimming,Solitary,6
-Chasm Skater,Titaeus,41,Geysers,Organic Compounds,12,81,Swimming,Colony,5
-Subsurface Glider,Titaanus,6,Subsurface Ocean,Organic Compounds,4,85,Swimming,Solitary,8
-Abyss Walker,Euroaris,52,Geysers,Chemosynthesis,16,87,Floating,Colony,1
-Vent Lurker,Titaus,26,Subsurface Ocean,Chemosynthesis,4,173,Floating,Solitary,4
-Chasm Skater,Brinyensis,64,Ice Caves,Chemosynthesis,5,144,Floating,Solitary,4
-Vent Lurker,Metharis,59,Subsurface Ocean,Organic Compounds,24,108,Floating,Pack,3
-Thermal Lurker,Titaus,56,Subsurface Ocean,Chemosynthesis,5,130,Floating,Solitary,3
-Vent Lurker,Titaum,59,Subsurface Ocean,Chemosynthesis,8,140,Swimming,Colony,4
-Frost Swimmer,Frostanus,70,Subsurface Ocean,Minerals,10,143,Burrowing,Colony,1
-Thermal Lurker,Aquainus,33,Ice Caves,Minerals,17,164,Swimming,Pack,2
-Tidal Wanderer,Glacanus,53,Ice Caves,Organic Compounds,9,108,Floating,Colony,9
-Ice Cave Dweller,Titaus,22,Geysers,Chemosynthesis,22,79,Swimming,Colony,2
-Abyss Walker,Aquaorus,21,Ice Caves,Chemosynthesis,19,177,Floating,Colony,5
-Thermal Lurker,Aquaix,70,Ice Caves,Minerals,14,145,Floating,Solitary,9
-Subsurface Glider,Euroorus,70,Geysers,Organic Compounds,8,151,Swimming,Solitary,9
-Enceladus Burrower,Cryous,4,Ice Caves,Minerals,9,122,Floating,Colony,8
-Chasm Skater,Methius,75,Subsurface Ocean,Minerals,22,120,Burrowing,Pack,1
-Ice Drifter,Hydroum,62,Subsurface Ocean,Minerals,11,163,Floating,Solitary,1
-Enceladus Burrower,Frostix,62,Geysers,Minerals,23,108,Burrowing,Pack,9
-Tidal Wanderer,Frostinus,24,Geysers,Chemosynthesis,1,130,Burrowing,Colony,8
-Enceladus Burrower,Glacum,55,Geysers,Chemosynthesis,14,60,Floating,Colony,9
-Hydrofloat,Frostus,9,Subsurface Ocean,Minerals,5,155,Swimming,Solitary,7
-Subsurface Glider,Methinus,3,Ice Caves,Organic Compounds,21,72,Burrowing,Colony,3
-Ice Drifter,Brinyus,31,Subsurface Ocean,Organic Compounds,14,153,Swimming,Solitary,3
-Thermal Lurker,Hydroanus,40,Geysers,Organic Compounds,4,146,Burrowing,Colony,2
-Thermal Lurker,Frostaris,36,Ice Caves,Organic Compounds,22,110,Floating,Colony,5
-Thermal Lurker,Methius,24,Ice Caves,Minerals,23,115,Floating,Solitary,3
-Tidal Wanderer,Methix,6,Subsurface Ocean,Chemosynthesis,1,142,Burrowing,Solitary,6
-Frost Swimmer,Titaus,66,Geysers,Organic Compounds,22,121,Floating,Solitary,2
-Ice Cave Dweller,Glacinus,75,Subsurface Ocean,Minerals,23,91,Burrowing,Colony,3
-Chasm Skater,Methum,4,Ice Caves,Organic Compounds,19,89,Floating,Colony,5
-Polar Roamer,Methix,79,Subsurface Ocean,Organic Compounds,8,88,Swimming,Pack,1
-Deep Glider,Frostaris,6,Subsurface Ocean,Minerals,15,108,Floating,Solitary,1
-Ice Cave Dweller,Permainus,51,Geysers,Chemosynthesis,21,104,Swimming,Colony,9
-Tidal Wanderer,Aquaix,62,Geysers,Chemosynthesis,15,152,Floating,Colony,7
-Geyser Jumper,Glacaris,57,Ice Caves,Minerals,9,89,Swimming,Solitary,1
-Subsurface Glider,Hydroum,66,Subsurface Ocean,Chemosynthesis,21,75,Floating,Pack,8
-Chasm Skater,Glacinus,79,Subsurface Ocean,Minerals,9,99,Swimming,Solitary,3
-Ice Cave Dweller,Titaorus,75,Subsurface Ocean,Minerals,10,78,Burrowing,Pack,8
-Abyss Walker,Titaix,8,Ice Caves,Minerals,20,77,Burrowing,Colony,5
-Tidal Wanderer,Eurous,26,Ice Caves,Chemosynthesis,21,60,Swimming,Pack,1
-Hydrofloat,Aquainus,51,Geysers,Minerals,9,137,Floating,Colony,7
-Deep Glider,Glacix,45,Geysers,Organic Compounds,3,174,Swimming,Solitary,5
-Hydrofloat,Glacus,44,Geysers,Chemosynthesis,20,106,Floating,Solitary,6
-Thermal Lurker,Cryoensis,5,Subsurface Ocean,Chemosynthesis,11,173,Burrowing,Solitary,6
-Deep Glider,Euroix,70,Subsurface Ocean,Chemosynthesis,6,125,Floating,Pack,8
-Ice Cave Dweller,Glacorus,26,Geysers,Chemosynthesis,2,177,Burrowing,Colony,9
-Abyss Walker,Euroanus,68,Subsurface Ocean,Organic Compounds,7,151,Floating,Solitary,2
+Name,Latin Name,Size (cm),Habitat,Lifespan (years),Temperature Tolerance (K),Mobility,Social Structure,Reproduction Rate
+Subsurface Glider,Frostaris,18,Ice Caves,11,141,Swimming,Pack,1
+Chasm Skater,Frostensis,38,Subsurface Ocean,5,150,Burrowing,Pack,5
+Hydrofloat,Hydroeus,15,Subsurface Ocean,20,93,Burrowing,Solitary,2
+Hydrofloat,Euroensis,64,Ice Caves,11,150,Burrowing,Solitary,6
+Cryo Crawler,Hydroinus,28,Subsurface Ocean,10,76,Floating,Colony,1
+Cryo Crawler,Aquaeus,74,Geysers,8,102,Floating,Colony,3
+Geyser Jumper,Methius,39,Geysers,6,118,Swimming,Solitary,5
+Polar Roamer,Brinyus,57,Geysers,6,167,Swimming,Colony,4
+Chasm Skater,Cryoum,17,Subsurface Ocean,8,110,Floating,Solitary,3
+Subsurface Glider,Brinyeus,44,Geysers,23,113,Floating,Pack,5
+Frost Swimmer,Glacius,25,Ice Caves,15,83,Floating,Colony,8
+Cryo Crawler,Hydroensis,17,Ice Caves,14,84,Burrowing,Colony,4
+Frost Swimmer,Glacanus,13,Subsurface Ocean,11,130,Burrowing,Solitary,1
+Enceladus Burrower,Hydroinus,25,Ice Caves,12,111,Floating,Colony,7
+Cryo Crawler,Frostaris,68,Ice Caves,13,129,Burrowing,Colony,8
+Vent Lurker,Eurous,10,Subsurface Ocean,8,176,Burrowing,Pack,3
+Polar Roamer,Titaorus,67,Geysers,18,147,Swimming,Colony,6
+Chasm Skater,Methius,18,Geysers,1,92,Floating,Pack,2
+Ice Cave Dweller,Cryoorus,34,Geysers,15,108,Floating,Solitary,7
+Geyser Jumper,Frostaris,8,Subsurface Ocean,8,88,Burrowing,Colony,8
+Enceladus Burrower,Brinyix,40,Ice Caves,11,122,Floating,Pack,6
+Ice Cave Dweller,Cryous,42,Geysers,12,166,Swimming,Solitary,6
+Chasm Skater,Titaeus,41,Geysers,12,81,Swimming,Colony,5
+Subsurface Glider,Titaanus,6,Subsurface Ocean,4,85,Swimming,Solitary,8
+Abyss Walker,Euroaris,52,Geysers,16,87,Floating,Colony,1
+Vent Lurker,Titaus,26,Subsurface Ocean,4,173,Floating,Solitary,4
+Chasm Skater,Brinyensis,64,Ice Caves,5,144,Floating,Solitary,4
+Vent Lurker,Metharis,59,Subsurface Ocean,24,108,Floating,Pack,3
+Thermal Lurker,Titaus,56,Subsurface Ocean,5,130,Floating,Solitary,3
+Vent Lurker,Titaum,59,Subsurface Ocean,8,140,Swimming,Colony,4
+Frost Swimmer,Frostanus,70,Subsurface Ocean,10,143,Burrowing,Colony,1
+Thermal Lurker,Aquainus,33,Ice Caves,17,164,Swimming,Pack,2
+Tidal Wanderer,Glacanus,53,Ice Caves,9,108,Floating,Colony,9
+Ice Cave Dweller,Titaus,22,Geysers,22,79,Swimming,Colony,2
+Abyss Walker,Aquaorus,21,Ice Caves,19,177,Floating,Colony,5
+Thermal Lurker,Aquaix,70,Ice Caves,14,145,Floating,Solitary,9
+Subsurface Glider,Euroorus,70,Geysers,8,151,Swimming,Solitary,9
+Enceladus Burrower,Cryous,4,Ice Caves,9,122,Floating,Colony,8
+Chasm Skater,Methius,75,Subsurface Ocean,22,120,Burrowing,Pack,1
+Ice Drifter,Hydroum,62,Subsurface Ocean,11,163,Floating,Solitary,1
+Enceladus Burrower,Frostix,62,Geysers,23,108,Burrowing,Pack,9
+Tidal Wanderer,Frostinus,24,Geysers,1,130,Burrowing,Colony,8
+Enceladus Burrower,Glacum,55,Geysers,14,60,Floating,Colony,9
+Hydrofloat,Frostus,9,Subsurface Ocean,5,155,Swimming,Solitary,7
+Subsurface Glider,Methinus,3,Ice Caves,21,72,Burrowing,Colony,3
+Ice Drifter,Brinyus,31,Subsurface Ocean,14,153,Swimming,Solitary,3
+Thermal Lurker,Hydroanus,40,Geysers,4,146,Burrowing,Colony,2
+Thermal Lurker,Frostaris,36,Ice Caves,22,110,Floating,Colony,5
+Thermal Lurker,Methius,24,Ice Caves,23,115,Floating,Solitary,3
+Tidal Wanderer,Methix,6,Subsurface Ocean,1,142,Burrowing,Solitary,6
+Frost Swimmer,Titaus,66,Geysers,22,121,Floating,Solitary,2
+Ice Cave Dweller,Glacinus,75,Subsurface Ocean,23,91,Burrowing,Colony,3
+Chasm Skater,Methum,4,Ice Caves,19,89,Floating,Colony,5
+Polar Roamer,Methix,79,Subsurface Ocean,8,88,Swimming,Pack,1
+Deep Glider,Frostaris,6,Subsurface Ocean,15,108,Floating,Solitary,1
+Ice Cave Dweller,Permainus,51,Geysers,21,104,Swimming,Colony,9
+Tidal Wanderer,Aquaix,62,Geysers,15,152,Floating,Colony,7
+Geyser Jumper,Glacaris,57,Ice Caves,9,89,Swimming,Solitary,1
+Subsurface Glider,Hydroum,66,Subsurface Ocean,21,75,Floating,Pack,8
+Chasm Skater,Glacinus,79,Subsurface Ocean,9,99,Swimming,Solitary,3
+Ice Cave Dweller,Titaorus,75,Subsurface Ocean,10,78,Burrowing,Pack,8
+Abyss Walker,Titaix,8,Ice Caves,20,77,Burrowing,Colony,5
+Tidal Wanderer,Eurous,26,Ice Caves,21,60,Swimming,Pack,1
+Hydrofloat,Aquainus,51,Geysers,9,137,Floating,Colony,7
+Deep Glider,Glacix,45,Geysers,3,174,Swimming,Solitary,5
+Hydrofloat,Glacus,44,Geysers,20,106,Floating,Solitary,6
+Thermal Lurker,Cryoensis,5,Subsurface Ocean,11,173,Burrowing,Solitary,6
+Deep Glider,Euroix,70,Subsurface Ocean,6,125,Floating,Pack,8
+Ice Cave Dweller,Glacorus,26,Geysers,2,177,Burrowing,Colony,9
+Abyss Walker,Euroanus,68,Subsurface Ocean,7,151,Floating,Solitary,2

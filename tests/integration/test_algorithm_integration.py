@@ -148,8 +148,10 @@ def test_configurations():
             'variables_to_stratify': {
                 'Lifespan (years)': {
                     'start': 10,
+                    'datatype': 'int'
                 },
-                'Habitat': ["Ice Caves", "Underground"]
+                'Habitat': {"values": ["Ice Caves", "Underground"],
+                            "datatype": "categorical"},
             }
         },
         'standard_dataset_bad_actor': {
@@ -167,10 +169,12 @@ def test_configurations():
             'variables_to_stratify': {
                 'Lifespan (years)': {
                     'start': 10,
-                    'end': 11
+                    'end': 11,
                     # Emulate a bad actor by setting an extremely narrow range; trying to infer individual data
+                    'datatype': 'int'
                 },
-                'Habitat': ["Underground"]
+                'Habitat': {"values": ["Underground"],
+                            'datatype': 'categorical'}
             },
             'expected_failure': True,
             'failure_reason': 'Too narrow scope of data stratification parameters resulting in sample size threshold issues.',
@@ -194,8 +198,10 @@ def test_configurations():
             'variables_to_stratify': {
                 'Lifespan (years)': {
                     'start': 10,
+                    'datatype': 'int'
                 },
-                'Habitat': ["Ice Caves", "Underground"]  # Underground habitat preferences are not present
+                'Habitat': {"values": ["Ice Caves", "Underground"],  # Underground habitat preferences are not present
+                            'datatype': 'categorical'}
             },
             'expected_failure': True,
             'failure_reason': 'Non-existent variables requested or invalid input structure specified',
@@ -211,7 +217,16 @@ def test_configurations():
             'variables_to_describe_inlier_specific': {
                 "Age": {"datatype": "numerical", "inliers": (18, 35)}
             },
-            'variables_to_stratify': None,
+            'variables_to_stratify': {
+                'Lifespan (years)': {
+                    'start': 10,
+                    'end': 11,
+                    # Emulate a bad actor by setting an extremely narrow range; trying to infer individual data
+                    'datatype': 'int'
+                },
+                'Habitat': {"values": ["Underground"],
+                            'datatype': 'categorical'}
+            },
             'expected_failure': True,
             'failure_reason': 'Dataset with insufficient sample size should not give any direct results.',
             'expected_error_type': [CollectResultsError,

@@ -200,7 +200,7 @@ class TestVantage6DeveloperNetwork:
     def _check_container_logs_for_connection(self, container, search_patterns: List[str]) -> Tuple[bool, List[str]]:
         """Check container logs for connection-related messages."""
         try:
-            logs = container.logs(tail=100).decode('utf-8', errors='ignore')
+            logs = container.logs(tail=-100).decode('utf-8', errors='ignore')
             found_patterns = []
 
             for pattern in search_patterns:

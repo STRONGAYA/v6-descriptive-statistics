@@ -206,11 +206,12 @@ def vantage6_network_session(docker_client, extra_node_config_file):
 
         # Create and start a demo network with extra node config
         print(f"Creating demo network: algorithm-ci-test.")
+        print(f"Using IP: '{docker_client.docker_host}', as server IP.")
         create_args = [
             "v6", "dev", "create-demo-network",
             "--name", "algorithm-ci-test",
-            "--server-url", docker_client.docker_host,
-            "--extra-node-config", extra_node_config_file,
+            "--server-url", str(docker_client.docker_host),
+            "--extra-node-config", str(extra_node_config_file),
             "--extra-server-config", str(server_config_path),
             "--extra-store-config", str(store_config_path)
         ]

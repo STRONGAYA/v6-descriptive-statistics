@@ -273,44 +273,69 @@ class TestVantage6DeveloperNetwork:
             r"connection.*established"
         ]
 
-        # Check server logs for node connections
-        server_has_connections, server_patterns = self._check_container_logs_for_connection(
-            server_container, server_connection_patterns
-        )
+        # Retry configuration
+        max_retry_time = 120  # Maximum time to wait for connections (seconds)
+        retry_interval = 15   # Time between retry attempts (seconds)
+        start_time = time.time()
 
-        if server_has_connections:
-            print(f"Server shows connection indicators: {server_patterns}")
-        else:
-            print("Warning: Server logs don't show clear connection indicators")
+        print(f"Checking node connections with retry logic (max {max_retry_time}s, {retry_interval}s intervals)")
 
-        # Check each node for connection to server
-        connected_nodes = 0
+        while True:
+            elapsed_time = time.time() - start_time
 
-        for node_container in node_containers:
-            # Check node logs for connection indicators
-            node_connected, node_patterns = self._check_container_logs_for_connection(
-                node_container, node_connection_patterns
+            # Check server logs for node connections
+            server_has_connections, server_patterns = self._check_container_logs_for_connection(
+                server_container, server_connection_patterns
             )
 
-            # Check network connectivity
-            network_reachable = self._check_network_connectivity(
-                docker_client, node_container, server_container
-            )
+            if server_has_connections:
+                print(f"Server shows connection indicators: {server_patterns}")
 
-            if node_connected:
-                print(f"Node {node_container.name} shows connection: {node_patterns}")
-                connected_nodes += 1
-            elif network_reachable:
-                print(f"Node {node_container.name} can reach server but no clear connection logs")
-                connected_nodes += 1
-            else:
-                print(f"Node {node_container.name} shows no connection indicators")
+            # Check each node for connection to server
+            connected_nodes = 0
 
-        # Assert that at least one node is connected
+            for node_container in node_containers:
+                # Refresh container state to get latest logs
+                try:
+                    node_container.reload()
+                except docker.errors.NotFound:
+                    print(f"Node container {node_container.name} no longer exists")
+                    continue
+
+                # Check node logs for connection indicators
+                node_connected, node_patterns = self._check_container_logs_for_connection(
+                    node_container, node_connection_patterns
+                )
+
+                # Check network connectivity
+                network_reachable = self._check_network_connectivity(
+                    docker_client, node_container, server_container
+                )
+
+                if node_connected:
+                    print(f"Node {node_container.name} shows connection: {node_patterns}")
+                    connected_nodes += 1
+                elif network_reachable:
+                    print(f"Node {node_container.name} can reach server but no clear connection logs")
+                    connected_nodes += 1
+
+            # Success condition: at least one node connected
+            if connected_nodes > 0:
+                print(f"Connection verification successful: {connected_nodes}/{len(node_containers)} nodes connected (after {elapsed_time:.1f}s)")
+                break
+
+            # Check if we've exceeded the maximum retry time
+            if elapsed_time >= max_retry_time:
+                print(f"Connection check timed out after {max_retry_time}s")
+                break
+
+            # Wait before next attempt
+            print(f"No connections found yet (attempt at {elapsed_time:.1f}s), waiting {retry_interval}s before retry...")
+            time.sleep(retry_interval)
+
+        # Final assertion - at least one node should be connected
         assert connected_nodes > 0, \
-            f"No nodes appear to be connected to server. Connected: {connected_nodes}/{len(node_containers)}"
-
-        print(f"Connection verification complete: {connected_nodes}/{len(node_containers)} nodes connected")
+            f"No nodes connected to server after {max_retry_time}s. Connected: {connected_nodes}/{len(node_containers)}"
 
     def test_container_health_status(self, vantage6_network_session, docker_client):
         """Test the health status of all running containers."""

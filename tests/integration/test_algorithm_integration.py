@@ -6,6 +6,7 @@ import json
 import pandas as pd
 
 from json import JSONDecodeError
+from io import StringIO
 from typing import Any, Dict, Tuple
 from vantage6.algorithm.tools.exceptions import DataError, UserInputError, CollectResultsError, \
     PrivacyThresholdViolation, InputError, AlgorithmError, CollectOrganizationError
@@ -734,8 +735,8 @@ def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
     assert numerical_stats is not None, "Numerical statistics should not be None"
 
     # Read the JSON strings into dictionaries
-    categorical_stats = pd.read_json(categorical_stats)
-    numerical_stats = pd.read_json(numerical_stats)
+    categorical_stats = pd.read_json(StringIO(categorical_stats))
+    numerical_stats = pd.read_json(StringIO(numerical_stats))
     assert isinstance(categorical_stats, pd.DataFrame), "Categorical statistics should be a pandas DataFrame"
     assert isinstance(numerical_stats, pd.DataFrame), "Numerical statistics should be a pandas DataFrame"
 

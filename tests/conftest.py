@@ -378,6 +378,10 @@ def get_docker_host():
             import json
             bridge_info = json.loads(result.stdout)
             gateway = bridge_info[0]['IPAM']['Config'][0]['Gateway']
+
+            # The gateway might not have the http scheme included
+            if not gateway.startswith("http"):
+                gateway = f"http://{gateway}"
             return gateway
         except (subprocess.CalledProcessError, KeyError, IndexError, json.JSONDecodeError):
             # Assume it is a default Docker IP if inspection fails

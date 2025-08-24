@@ -379,16 +379,8 @@ def get_docker_host():
             gateway = bridge_info[0]['IPAM']['Config'][0]['Gateway']
             return gateway
         except (subprocess.CalledProcessError, KeyError, IndexError, json.JSONDecodeError):
-            # Fallback methods for Linux
-            try:
-                # Method 1: Check the default gateway
-                result = subprocess.run(['ip', 'route', 'show', 'default'],
-                                        capture_output=True, text=True, check=True)
-                gateway = result.stdout.split()[2]
-                return gateway
-            except (subprocess.CalledProcessError, IndexError):
-                # Method 2: Use a common Docker bridge IP
-                return "http://172.17.0.1"
+            # Assume it is a default Docker IP if inspection fails
+            return "http://172.17.0.1"
 
 
 # Pytest markers for organising tests

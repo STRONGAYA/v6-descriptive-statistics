@@ -3,16 +3,34 @@
 
 ## Testing Status
 
-![Tests](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Test%20Suite/badge.svg?branch=revamped-version)
-![Coverage](https://raw.githubusercontent.com/STRONGAYA/v6-descriptive-statistics/revamped-version/tests/coverage-badge.svg)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Vantage6 4.12+](https://img.shields.io/badge/vantage6-4.12%2B-brightgreen.svg)](https://vantage6.ai)
-[![Licence](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+<p align="center">
+<a href="https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/"><img alt="Test status" src="https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Test%20Suite/badge.svg)"></a>
+<a><img alt="Coverage" src="https://raw.githubusercontent.com/STRONGAYA/v6-descriptive-statistics/main/tests/coverage-badge.svg"></a>
+<a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10+-blue.svg"></a>
+<a href="https://opensource.org/licenses/Apache-2.0"><img alt="Licence: Apache 2.0" src="https://img.shields.io/badge/Licence-Apache%202.0-blue.svg"></a>
+<br>
+<a href="https://github.com/vantage6/vantage6/"><img alt="Vantage6 4.10, 4.11, 4.12" src="https://img.shields.io/badge/vantage6-4.10 | 4.11 | 4.12-blue.svg"></a>
+<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: v1.0.0 Pending" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-v1.0.0%20pending-yellow"></a>
+<br>
+<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+<a href="https://flake8.pycqa.org/"><img alt="Linting: flake8" src="https://img.shields.io/badge/linting-flake8-informational"></a>
+<a href="http://mypy-lang.org/"><img alt="Type checking: mypy" src="https://img.shields.io/badge/type%20checking-mypy-informational"></a>
+<a href="https://github.com/PyCQA/bandit"><img alt="Security: bandit" src="https://img.shields.io/badge/security-bandit-informational"></a>
+<a href="https://github.com/pyupio/safety"><img alt="Security: safety" src="https://img.shields.io/badge/security-safety-informational"></a>
+</p>
+
+<!--
+To show the approved badge instead, use:
+<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: v1.0.0 Approved" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-v1.0.0%20approved-brightgreen">
+-->
+
 
 Vantage6 algorithm that retrieves descriptive statistics with comprehensive Vantage6 integration testing.
 
 This algorithm is designed to be run with the [vantage6](https://vantage6.ai)
 infrastructure for distributed analysis and learning.
+
+[//]: # (TODO clean-up)
 
 The base code for this algorithm has been created via the
 [v6-algorithm-template](https://github.com/vantage6/v6-algorithm-template)

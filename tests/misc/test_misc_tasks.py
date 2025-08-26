@@ -6,7 +6,6 @@ rather than failing the test suite.
 """
 
 import pytest
-import os
 from pathlib import Path
 from datetime import datetime
 
@@ -20,18 +19,18 @@ class TestProjectMiscellaneous:
         
         # Check for common documentation files
         doc_files = [
-            repo_root / "docs" / "usage.rst",
+            repo_root / "docs" / repo_root.__getattribute__("name") / "usage.rst",
             repo_root / "README.md",
-            repo_root / "docs" / "README.md",
         ]
         
         found_docs = [doc for doc in doc_files if doc.exists()]
         
         if not found_docs:
             pytest.fail("No documentation files found. Consider adding usage.rst or comprehensive README.md")
-        
+
+        # TODO add implementation.rst check and assess whether functions are documented there as well
         # Check if usage.rst contains function definitions
-        usage_rst = repo_root / "docs" / "usage.rst"
+        usage_rst = repo_root / "docs" / repo_root.__getattribute__("name") / "usage.rst"
         if usage_rst.exists():
             content = usage_rst.read_text()
             # Look for function references
@@ -93,7 +92,7 @@ class TestProjectMiscellaneous:
                 break
         
         if not found_license:
-            print("⚠ Warning: No LICENSE file found - consider adding a license")
+            print("⚠ Warning: No LICENCE file found - consider adding a license")
             return
         
         try:
@@ -102,7 +101,7 @@ class TestProjectMiscellaneous:
             
             # Check if current year is in the license
             if str(current_year) in content:
-                print(f"✓ LICENSE file found with current year ({current_year})")
+                print(f"✓ LICENCE file found with current year ({current_year})")
             else:
                 # Check for any year in the license
                 import re
@@ -110,20 +109,20 @@ class TestProjectMiscellaneous:
                 if years:
                     latest_year = max(int(year) for year in years)
                     if current_year - latest_year > 1:
-                        print(f"⚠ Warning: LICENSE file may need year update (found {latest_year}, current {current_year})")
+                        print(f"⚠ Warning: LICENCE file may need year update (found {latest_year}, current {current_year})")
                     else:
-                        print("✓ LICENSE file found with recent year")
+                        print("✓ LICENCE file found with recent year")
                 else:
-                    print("✓ LICENSE file found (no year detected)")
+                    print("✓ LICENCE file found (no year detected)")
             
             # Check for license holder placeholder
             placeholders = ["[fullname]", "[name of copyright owner]", "COPYRIGHT_HOLDER", "<OWNER>"]
             has_placeholder = any(placeholder in content for placeholder in placeholders)
             
             if has_placeholder:
-                print("⚠ Warning: LICENSE file contains placeholder text that should be replaced with actual copyright holder")
+                print("⚠ Warning: LICENCE file contains placeholder text that should be replaced with actual copyright holder")
             else:
-                print("✓ LICENSE file appears to have proper copyright holder information")
+                print("✓ LICENCE file appears to have proper copyright holder information")
                 
         except Exception as e:
-            print(f"⚠ Warning: Could not validate LICENSE file: {e}")
+            print(f"⚠ Warning: Could not validate LICENCE file: {e}")

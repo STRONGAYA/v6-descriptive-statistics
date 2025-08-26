@@ -13,5 +13,6 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
     Returns:
         bool: True if the input structure is correct, False otherwise.
     """
-    # TODO implement checks for the input structure
+    # TODO implement checks for the input structure that is to be called in central.py 'central'
+    #  function, not as test, but as callable function.
     return True

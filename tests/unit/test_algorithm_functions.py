@@ -3,15 +3,14 @@ Unit tests for algorithm functions.
 
 Test the actual algorithm functionality rather than external libraries.
 """
+
 import pytest
 import sys
-
-import pandas as pd
 
 from pathlib import Path
 
 # Add the algorithm module to the path
-algorithm_path = Path(__file__).parent.parent.parent / 'v6-descriptive-statistics'
+algorithm_path = Path(__file__).parent.parent.parent / "v6-descriptive-statistics"
 sys.path.insert(0, str(algorithm_path))
 
 
@@ -24,15 +23,17 @@ class TestAlgorithmFunctions:
         try:
             # Test import of miscellaneous functions
             from miscellaneous import check_input_structure
+
             assert callable(check_input_structure)
 
             # Test that algorithm files exist and can be imported at module level
             # Full function testing requires vantage6 environment
             import partial
             import central
-            assert hasattr(partial, 'partial_general_statistics')
-            assert hasattr(partial, 'partial_aggregate_adjusted_deviation')
-            assert hasattr(central, 'central')
+
+            assert hasattr(partial, "partial_general_statistics")
+            assert hasattr(partial, "partial_aggregate_adjusted_deviation")
+            assert hasattr(central, "central")
 
         except ImportError as e:
             pytest.skip(f"Algorithm modules require vantage6 environment: {e}")
@@ -57,10 +58,11 @@ class TestAlgorithmFunctions:
         """Test central function exists and is properly decorated."""
         try:
             import central
+
             # Test that the central function exists
-            assert hasattr(central, 'central')
+            assert hasattr(central, "central")
             # The function should be decorated and callable in vantage6 environment
-            func = getattr(central, 'central')
+            func = getattr(central, "central")
             assert callable(func)
 
         except ImportError:
@@ -70,13 +72,14 @@ class TestAlgorithmFunctions:
         """Test partial functions exist and are properly decorated."""
         try:
             import partial
+
             # Test that the partial functions exist
-            assert hasattr(partial, 'partial_general_statistics')
-            assert hasattr(partial, 'partial_aggregate_adjusted_deviation')
+            assert hasattr(partial, "partial_general_statistics")
+            assert hasattr(partial, "partial_aggregate_adjusted_deviation")
 
             # The functions should be decorated and callable in vantage6 environment
-            func1 = getattr(partial, 'partial_general_statistics')
-            func2 = getattr(partial, 'partial_aggregate_adjusted_deviation')
+            func1 = getattr(partial, "partial_general_statistics")
+            func2 = getattr(partial, "partial_aggregate_adjusted_deviation")
             assert callable(func1)
             assert callable(func2)
 

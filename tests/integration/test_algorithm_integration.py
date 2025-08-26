@@ -1,6 +1,7 @@
 """
 Comprehensive Vantage6 integration testing.
 """
+
 import pytest
 import json
 import pandas as pd
@@ -8,8 +9,15 @@ import pandas as pd
 from json import JSONDecodeError
 from io import StringIO
 from typing import Any, Dict, Tuple
-from vantage6.algorithm.tools.exceptions import DataError, UserInputError, CollectResultsError, \
-    PrivacyThresholdViolation, InputError, AlgorithmError, CollectOrganizationError
+from vantage6.algorithm.tools.exceptions import (
+    DataError,
+    UserInputError,
+    CollectResultsError,
+    PrivacyThresholdViolation,
+    InputError,
+    AlgorithmError,
+    CollectOrganizationError,
+)
 
 
 @pytest.fixture
@@ -39,7 +47,8 @@ def test_methods():
 
     DYNAMIC PARAMETER FILLING:
     Parameters set to None are automatically filled by test methods from configurations:
-    - "variables_to_describe": Filled from config['variables_to_describe_basic'] or config['variables_to_describe_inlier_specific']
+    - "variables_to_describe": Filled from config['variables_to_describe_basic'] or
+    config['variables_to_describe_inlier_specific']
     - "organisation_ids": Filled from config['organisation_subset']
     - "variables_to_stratify": Filled from config['variables_to_stratify']
 
@@ -50,52 +59,47 @@ def test_methods():
     """
     return {
         "central": {
-            'basic': {
+            "basic": {
                 "variables_to_describe": None,  # Will be filled from config
             },
-            'organisation_selection': {
+            "organisation_selection": {
                 "variables_to_describe": None,  # Will be filled from config
                 "organisation_ids": None,  # Will be filled from config
             },
-            'data_stratification': {
+            "data_stratification": {
                 "variables_to_describe": None,  # Will be filled from config
                 "variables_to_stratify": None,  # Will be filled from config
             },
-            'inlier_specific': {
+            "inlier_specific": {
                 "variables_to_describe": None,  # Will be filled from config (inlier_specific)
             },
-            'return_partial': {
+            "return_partials": {
                 "variables_to_describe": None,  # Will be filled from config
-                "return_partial": True,  # Method-specific parameter
+                "return_partials": True,  # Method-specific parameter
             },
-            'parameter_galore': {
+            "parameter_galore": {
                 "variables_to_describe": None,  # Will be filled from config
                 "variables_to_stratify": None,  # Will be filled from config
                 "organisation_ids": None,  # Will be filled from config
-                "return_partial": True,  # Method-specific parameter
-            }
+                "return_partials": True,  # Method-specific parameter
+            },
         },
         "partial_general_statistics": {
-            'basic': {
+            "basic": {
                 "variables_to_describe": None,  # Will be filled from config
             },
-            'data_stratification': {
+            "data_stratification": {
                 "variables_to_describe": None,  # Will be filled from config
                 "variables_to_stratify": None,  # Will be filled from config
             },
-            'inlier_specific': {
+            "inlier_specific": {
                 "variables_to_describe": None,  # Will be filled from config (inlier_specific)
             },
-            'return_partial': {
-                "variables_to_describe": None,  # Will be filled from config
-                "detailed_output": True,  # Method-specific parameter
-            },
-            'parameter_galore': {
+            "parameter_galore": {
                 "variables_to_describe": None,  # Will be filled from config
                 "variables_to_stratify": None,  # Will be filled from config
-                "detailed_output": True,  # Method-specific parameter
-            }
-        }
+            },
+        },
     }
 
 
@@ -135,127 +139,148 @@ def test_configurations():
     - 'non_existent_*': Error handling validation
     """
     return {
-        'standard_dataset': {
-            'database_label': "creatures_of_europa",  # Europa is a moon of Jupiter with a subsurface ocean
-            'variables_to_describe_basic': {
+        "standard_dataset": {
+            "database_label": "creatures_of_europa",  # Europa is a moon of Jupiter with a subsurface ocean
+            "variables_to_describe_basic": {
                 "Temperature Tolerance (K)": {"datatype": "numerical"},
-                "Diet": {"datatype": "categorical"}
+                "Social Structure": {"datatype": "categorical"},
             },
-            'organisation_subset': [1, 2],
-            'variables_to_describe_inlier_specific': {
-                "Temperature Tolerance (K)": {"datatype": "numerical", "inliers": (100, 150)},
-                "Diet": {"datatype": "categorical", "inliers": ("Organic Compounds", "Minerals")}
-            },
-            'variables_to_stratify': {
-                'Lifespan (years)': {
-                    'start': 10,
-                    'datatype': 'int'
+            "organisation_subset": [1, 2],
+            "variables_to_describe_inlier_specific": {
+                "Temperature Tolerance (K)": {
+                    "datatype": "numerical",
+                    "inliers": (100, 150),
                 },
-                'Habitat': {"values": ["Ice Caves", "Underground"],
-                            "datatype": "categorical"},
-            }
-        },
-        'standard_dataset_bad_actor': {
-            'database_label': "creatures_of_europa",
-            'variables_to_describe_basic': {
-                "Temperature Tolerance (K)": {"datatype": "numerical"},
-                "Diet": {"datatype": "categorical"}
+                "Social Structure": {
+                    "datatype": "categorical",
+                    "inliers": ("Organic Compounds", "Minerals"),
+                },
             },
-            'organisation_subset': [1],
-            'variables_to_describe_inlier_specific': {
-                "Temperature Tolerance (K)": {"datatype": "numerical", "inliers": (100, 120)},
+            "variables_to_stratify": {
+                "Lifespan (years)": {"start": 10, "datatype": "int"},
+                "Habitat": {
+                    "values": ["Ice Caves", "Underground"],
+                    "datatype": "categorical",
+                },
+            },
+        },
+        "standard_dataset_bad_actor": {
+            "database_label": "creatures_of_europa",
+            "variables_to_describe_basic": {
+                "Temperature Tolerance (K)": {"datatype": "numerical"},
+                "Social Structure": {"datatype": "categorical"},
+            },
+            "organisation_subset": [1],
+            "variables_to_describe_inlier_specific": {
+                "Temperature Tolerance (K)": {
+                    "datatype": "numerical",
+                    "inliers": (100, 120),
+                },
                 # Emulate a bad actor by setting a very narrow range as inlier
-                "Diet": {"datatype": "categorical", "inliers": ("Organic Compounds", "Minerals", "Chemosynthesis")}
-            },
-            'variables_to_stratify': {
-                'Lifespan (years)': {
-                    'start': 10,
-                    'end': 11,
-                    # Emulate a bad actor by setting an extremely narrow range; trying to infer individual data
-                    'datatype': 'int'
+                "Social Structure": {
+                    "datatype": "categorical",
+                    "inliers": ("Solitary"),
                 },
-                'Habitat': {"values": ["Underground"],
-                            'datatype': 'categorical'}
             },
-            'expected_failure': True,
-            'failure_reason': 'Too narrow scope of data stratification parameters resulting in sample size threshold issues.',
-            'expected_error_type': [CollectResultsError, PrivacyThresholdViolation]
+            "variables_to_stratify": {
+                "Lifespan (years)": {
+                    "start": 10,
+                    "end": 11,
+                    # Emulate a bad actor by setting an extremely narrow range; trying to infer individual data
+                    "datatype": "int",
+                },
+                "Habitat": {"values": ["Underground"], "datatype": "categorical"},
+            },
+            "expected_failure": True,
+            "failure_reason": "Too narrow scope of data stratification parameters "
+            "resulting in sample size threshold issues.",
+            "expected_error_type": [CollectResultsError, PrivacyThresholdViolation],
         },
-        'standard_dataset_incorrect_input': {
-            'database_label': "creatures_of_enceladus",
+        "standard_dataset_incorrect_input": {
+            "database_label": "creatures_of_enceladus",
             # Enceladus is a moon of Saturn with a subsurface ocean
-            'variables_to_describe_basic': {
+            "variables_to_describe_basic": {
                 "Temperature Tolerance (K)": {"datatype": "numerical"},
-                "Diet": {"datatype": "categorical"}  # Dietary preferences of creatures on Enceladus are unknown
+                "Diet": {
+                    "datatype": "categorical"
+                },  # Dietary preferences of creatures on Enceladus are unknown
             },
-            'organisation_subset': [4, 5],
+            "organisation_subset": [4, 5],
             # Non-existent organisations to test input validation
-            'variables_to_describe_inlier_specific': {
-                "Temperature Tolerance (K)": {"datatype": "numerical",
-                                              "inliers": (50, 150)},
-                "Diet": {"datatype": "categorical",
-                         "inliers": ("Organic Compounds", "Minerals")}
-            },
-            'variables_to_stratify': {
-                'Lifespan (years)': {
-                    'start': 10,
-                    'datatype': 'int'
+            "variables_to_describe_inlier_specific": {
+                "Temperature Tolerance (K)": {
+                    "datatype": "numerical",
+                    "inliers": (50, 150),
                 },
-                'Habitat': {"values": ["Ice Caves", "Underground"],  # Underground habitat preferences are not present
-                            'datatype': 'categorical'}
+                "Diet": {
+                    "datatype": "categorical",
+                    "inliers": ("Organic Compounds", "Minerals"),
+                },
             },
-            'expected_failure': True,
-            'failure_reason': 'Non-existent variables requested or invalid input structure specified',
-            'expected_error_type': [DataError, InputError, UserInputError]
+            "variables_to_stratify": {
+                "Lifespan (years)": {"start": 10, "datatype": "int"},
+                "Habitat": {
+                    "values": [
+                        "Ice Caves",
+                        "Underground",
+                    ],  # Underground habitat preferences are not present
+                    "datatype": "categorical",
+                },
+            },
+            "expected_failure": True,
+            "failure_reason": "Non-existent variables requested or invalid input structure specified",
+            "expected_error_type": [CollectResultsError, UserInputError],
         },
-        'rare_dataset': {
-            'database_label': "creatures_of_titan",
+        "rare_dataset": {
+            "database_label": "creatures_of_titan",
             # Titan is Saturn's largest moon with various favourable conditions
-            'variables_to_describe_basic': {
-                "Age": {"datatype": "numerical"}
+            "variables_to_describe_basic": {
+                "Lifespan (years)": {"datatype": "numerical"}
             },
-            'organisation_subset': [1],
-            'variables_to_describe_inlier_specific': {
-                "Age": {"datatype": "numerical", "inliers": (18, 35)}
+            "organisation_subset": [1],
+            "variables_to_describe_inlier_specific": {
+                "Lifespan (years)": {"datatype": "numerical", "inliers": (18, 35)}
             },
-            'variables_to_stratify': {
-                'Lifespan (years)': {
-                    'start': 10,
-                    'end': 11,
+            "variables_to_stratify": {
+                "Lifespan (years)": {
+                    "start": 10,
+                    "end": 11,
                     # Emulate a bad actor by setting an extremely narrow range; trying to infer individual data
-                    'datatype': 'int'
+                    "datatype": "int",
                 },
-                'Habitat': {"values": ["Underground"],
-                            'datatype': 'categorical'}
+                "Habitat": {"values": ["Underground"], "datatype": "categorical"},
             },
-            'expected_failure': True,
-            'failure_reason': 'Dataset with insufficient sample size should not give any direct results.',
-            'expected_error_type': [CollectResultsError,
-                                    PrivacyThresholdViolation]
+            "expected_failure": True,
+            "failure_reason": "Dataset with insufficient sample size should not give any direct results.",
+            "expected_error_type": [CollectResultsError, PrivacyThresholdViolation],
         },
-        'non_existent_dataset_standard_input': {
-            'database_label': "creatures_of_sedna",
+        "non_existent_dataset_standard_input": {
+            "database_label": "creatures_of_sedna",
             # Sedna is a dwarf planet in the Oort Cloud, life is unlikely
-            'variables_to_describe_basic': {
+            "variables_to_describe_basic": {
                 "Temperature Tolerance (K)": {"datatype": "numerical"},
-                "Diet": {"datatype": "categorical"}
+                "Diet": {"datatype": "categorical"},
             },
-            'organisation_subset': [1, 2],
-            'variables_to_describe_inlier_specific': {
-                "Temperature Tolerance (K)": {"datatype": "numerical",
-                                              "inliers": (0, 10000)},
-                "Diet": {"datatype": "categorical",
-                         "inliers": ("Organic Compounds", "Minerals")}
+            "organisation_subset": [1, 2],
+            "variables_to_describe_inlier_specific": {
+                "Temperature Tolerance (K)": {
+                    "datatype": "numerical",
+                    "inliers": (0, 10000),
+                },
+                "Diet": {
+                    "datatype": "categorical",
+                    "inliers": ("Organic Compounds", "Minerals"),
+                },
             },
-            'variables_to_stratify': {
-                'Lifespan (years)': {
-                    'start': 1,
+            "variables_to_stratify": {
+                "Lifespan (years)": {
+                    "start": 1,
                 }
             },
-            'expected_failure': True,
-            'failure_reason': 'Attempting to query an unknown database',
-            'expected_error_type': [CollectResultsError, JSONDecodeError]
-        }
+            "expected_failure": True,
+            "failure_reason": "Attempting to query an unknown database",
+            "expected_error_type": [CollectResultsError, JSONDecodeError],
+        },
     }
 
 
@@ -302,11 +327,24 @@ class TestAlgorithmComponent:
     """
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
-    @pytest.mark.parametrize("config_name",
-                             ["standard_dataset", "standard_dataset_incorrect_input",
-                              "rare_dataset", "non_existent_dataset_standard_input"])
-    def test_algorithm_basic(self, authentication, algorithm_image_name, test_configurations, test_methods, method,
-                             config_name):
+    @pytest.mark.parametrize(
+        "config_name",
+        [
+            "standard_dataset",
+            "standard_dataset_incorrect_input",
+            "rare_dataset",
+            "non_existent_dataset_standard_input",
+        ],
+    )
+    def test_algorithm_basic(
+        self,
+        authentication,
+        algorithm_image_name,
+        test_configurations,
+        test_methods,
+        method,
+        config_name,
+    ):
         """
         Test algorithm with different methods and configurations, including expected failures.
 
@@ -320,8 +358,8 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config['basic'].copy()
-        kwargs["variables_to_describe"] = config['variables_to_describe_basic']
+        kwargs = method_config["basic"].copy()
+        kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -329,41 +367,66 @@ class TestAlgorithmComponent:
             organizations=[1],
             name=f"Test {method} algorithm run - {config_name}",
             image=algorithm_image_name,
-            description=f'Task to test the {method} function using {config_name} configuration.',
-            input_={'method': method, "kwargs": kwargs},
-            databases=[{'label': config['database_label']}]
+            description=f"Task to test the {method} function using {config_name} configuration.",
+            input_={"method": method, "kwargs": kwargs},
+            databases=[{"label": config["database_label"]}],
         )
 
-        if config.get('expected_failure', False):
+        if config.get("expected_failure", False):
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
-                categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
+                categorical_statistics, numerical_statistics = extract_data_from_result(
+                    client, task
+                )
 
             # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get('expected_error_type')
+            expected_errors = config.get("expected_error_type")
             if expected_errors:
                 # Convert single error type to list for uniform handling
                 if not isinstance(expected_errors, list):
                     expected_errors = [expected_errors]
 
                 # Check if the raised exception matches any of the expected types
-                error_matched = any(isinstance(exc_info.value, expected_error) for expected_error in expected_errors)
-                assert error_matched, f"Expected one of {[err.__name__ for err in expected_errors]} but got {type(exc_info.value).__name__}"
+                error_matched = any(
+                    isinstance(exc_info.value, expected_error)
+                    for expected_error in expected_errors
+                )
+                assert error_matched, (
+                    f"Expected one of {[err.__name__ for err in expected_errors]} "
+                    f"but got {type(exc_info.value).__name__}"
+                )
 
             print(f"Expected failure occurred for {config_name}: {exc_info.value}")
         else:
             # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
-            assert determine_statistics_acceptance({},
-                                                   {}), f"Centralised and federated statistics deviate too much for {config_name} configuration"
+            categorical_statistics, numerical_statistics = extract_data_from_result(
+                client, task
+            )
+            assert determine_statistics_acceptance(
+                {}, {}
+            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
-    @pytest.mark.parametrize("method", ["central"])  # partial_general_statistics doesn't support organisation selection
-    @pytest.mark.parametrize("config_name",
-                             ["standard_dataset", "standard_dataset_incorrect_input",
-                              "rare_dataset", "non_existent_dataset_standard_input"])
-    def test_algorithm_organisation_selection(self, authentication, algorithm_image_name, test_configurations,
-                                              test_methods,
-                                              method, config_name):
+    @pytest.mark.parametrize(
+        "method", ["central"]
+    )  # partial_general_statistics doesn't support organisation selection
+    @pytest.mark.parametrize(
+        "config_name",
+        [
+            "standard_dataset",
+            "standard_dataset_incorrect_input",
+            "rare_dataset",
+            "non_existent_dataset_standard_input",
+        ],
+    )
+    def test_algorithm_organisation_selection(
+        self,
+        authentication,
+        algorithm_image_name,
+        test_configurations,
+        test_methods,
+        method,
+        config_name,
+    ):
         """
         Test algorithm with organisation selection, including expected failures.
 
@@ -377,13 +440,15 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Skip if method doesn't support organisation_selection scenario
-        if 'organisation_selection' not in method_config:
-            pytest.skip(f"Organisation selection functionality not supported for {method} method")
+        if "organisation_selection" not in method_config:
+            pytest.skip(
+                f"Organisation selection functionality not supported for {method} method"
+            )
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config['organisation_selection'].copy()
-        kwargs["variables_to_describe"] = config['variables_to_describe_basic']
-        kwargs["organisation_ids"] = config['organisation_subset']
+        kwargs = method_config["organisation_selection"].copy()
+        kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
+        kwargs["organisation_ids"] = config["organisation_subset"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -391,41 +456,66 @@ class TestAlgorithmComponent:
             organizations=[1],
             name=f"Test {method} algorithm run on specific organisations - {config_name}",
             image=algorithm_image_name,
-            description=f'Task to test the {method} function when selecting specific organisations using {config_name} configuration.',
-            input_={'method': method, "kwargs": kwargs},
-            databases=[{'label': config['database_label']}]
+            description=f"Task to test the {method} function "
+            f"when selecting specific organisations using {config_name} configuration.",
+            input_={"method": method, "kwargs": kwargs},
+            databases=[{"label": config["database_label"]}],
         )
 
-        if config.get('expected_failure', False):
+        if config.get("expected_failure", False):
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
-                categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
+                categorical_statistics, numerical_statistics = extract_data_from_result(
+                    client, task
+                )
 
             # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get('expected_error_type')
+            expected_errors = config.get("expected_error_type")
             if expected_errors:
                 # Convert single error type to list for uniform handling
                 if not isinstance(expected_errors, list):
                     expected_errors = [expected_errors]
 
                 # Check if the raised exception matches any of the expected types
-                error_matched = any(isinstance(exc_info.value, expected_error) for expected_error in expected_errors)
-                assert error_matched, f"Expected one of {[err.__name__ for err in expected_errors]} but got {type(exc_info.value).__name__}"
+                error_matched = any(
+                    isinstance(exc_info.value, expected_error)
+                    for expected_error in expected_errors
+                )
+                assert error_matched, (
+                    f"Expected one of {[err.__name__ for err in expected_errors]} "
+                    f"but got {type(exc_info.value).__name__}"
+                )
 
             print(f"Expected failure occurred for {config_name}: {exc_info.value}")
         else:
             # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
-            assert determine_statistics_acceptance({},
-                                                   {}), f"Centralised and federated statistics deviate too much for {config_name} configuration"
+            categorical_statistics, numerical_statistics = extract_data_from_result(
+                client, task
+            )
+            assert determine_statistics_acceptance(
+                {}, {}
+            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
-    @pytest.mark.parametrize("config_name",
-                             ["standard_dataset", "standard_dataset_bad_actor", "standard_dataset_incorrect_input",
-                              "rare_dataset", "non_existent_dataset_standard_input"])
-    def test_algorithm_data_stratification(self, authentication, algorithm_image_name, test_configurations,
-                                           test_methods,
-                                           method, config_name):
+    @pytest.mark.parametrize(
+        "config_name",
+        [
+            "standard_dataset",
+            "standard_dataset_bad_actor",
+            "standard_dataset_incorrect_input",
+            "rare_dataset",
+            "non_existent_dataset_standard_input",
+        ],
+    )
+    def test_algorithm_data_stratification(
+        self,
+        authentication,
+        algorithm_image_name,
+        test_configurations,
+        test_methods,
+        method,
+        config_name,
+    ):
         """
         Test algorithm with data stratification, including expected failures.
 
@@ -439,13 +529,13 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Skip if configuration doesn't support stratification
-        if config['variables_to_stratify'] is None:
+        if config["variables_to_stratify"] is None:
             pytest.skip(f"Stratification not supported for {config_name} configuration")
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config['data_stratification'].copy()
-        kwargs["variables_to_describe"] = config['variables_to_describe_basic']
-        kwargs["variables_to_stratify"] = config['variables_to_stratify']
+        kwargs = method_config["data_stratification"].copy()
+        kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
+        kwargs["variables_to_stratify"] = config["variables_to_stratify"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -453,40 +543,66 @@ class TestAlgorithmComponent:
             organizations=[1],
             name=f"Test {method} algorithm run with data stratification - {config_name}",
             image=algorithm_image_name,
-            description=f'Task to test the {method} function when stratifying the data using {config_name} configuration.',
-            input_={'method': method, "kwargs": kwargs},
-            databases=[{'label': config['database_label']}]
+            description=f"Task to test the {method} function "
+            f"when stratifying the data using {config_name} configuration.",
+            input_={"method": method, "kwargs": kwargs},
+            databases=[{"label": config["database_label"]}],
         )
 
-        if config.get('expected_failure', False):
+        if config.get("expected_failure", False):
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
-                extract_data_from_result(client, task)  # Output not necessary when tasks have failed
+                extract_data_from_result(
+                    client, task
+                )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get('expected_error_type')
+            expected_errors = config.get("expected_error_type")
             if expected_errors:
                 # Convert single error type to list for uniform handling
                 if not isinstance(expected_errors, list):
                     expected_errors = [expected_errors]
 
                 # Check if the raised exception matches any of the expected types
-                error_matched = any(isinstance(exc_info.value, expected_error) for expected_error in expected_errors)
-                assert error_matched, f"Expected one of {[err.__name__ for err in expected_errors]} but got {type(exc_info.value).__name__}"
+                error_matched = any(
+                    isinstance(exc_info.value, expected_error)
+                    for expected_error in expected_errors
+                )
+                assert error_matched, (
+                    f"Expected one of {[err.__name__ for err in expected_errors]} "
+                    f"but got {type(exc_info.value).__name__}"
+                )
 
             print(f"Expected failure occurred for {config_name}: {exc_info.value}")
         else:
             # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
-            assert determine_statistics_acceptance({},
-                                                   {}), f"Centralised and federated statistics deviate too much for {config_name} configuration"
+            categorical_statistics, numerical_statistics = extract_data_from_result(
+                client, task
+            )
+            assert determine_statistics_acceptance(
+                {}, {}
+            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
-    @pytest.mark.parametrize("config_name",
-                             ["standard_dataset", "standard_dataset_bad_actor", "standard_dataset_incorrect_input",
-                              "rare_dataset", "non_existent_dataset_standard_input"])
-    def test_algorithm_inlier_specific(self, authentication, algorithm_image_name, test_configurations, test_methods,
-                                       method, config_name):
+    @pytest.mark.parametrize(
+        "config_name",
+        [
+            "standard_dataset",
+            "standard_dataset_bad_actor",
+            "standard_dataset_incorrect_input",
+            "rare_dataset",
+            "non_existent_dataset_standard_input",
+        ],
+    )
+    def test_algorithm_inlier_specific(
+        self,
+        authentication,
+        algorithm_image_name,
+        test_configurations,
+        test_methods,
+        method,
+        config_name,
+    ):
         """
         Test algorithm with inlier-specific variable configurations.
 
@@ -500,12 +616,16 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Skip if configuration doesn't have inlier-specific variables
-        if not config.get('variables_to_describe_inlier_specific'):
-            pytest.skip(f"Inlier-specific variables not available for {config_name} configuration")
+        if not config.get("variables_to_describe_inlier_specific"):
+            pytest.skip(
+                f"Inlier-specific variables not available for {config_name} configuration"
+            )
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config['inlier_specific'].copy()
-        kwargs["variables_to_describe"] = config['variables_to_describe_inlier_specific']
+        kwargs = method_config["inlier_specific"].copy()
+        kwargs["variables_to_describe"] = config[
+            "variables_to_describe_inlier_specific"
+        ]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -513,40 +633,68 @@ class TestAlgorithmComponent:
             organizations=[1],
             name=f"Test {method} algorithm run with inlier-specific variables - {config_name}",
             image=algorithm_image_name,
-            description=f'Task to test the {method} function with inlier-specific variable configurations using {config_name} configuration.',
-            input_={'method': method, "kwargs": kwargs},
-            databases=[{'label': config['database_label']}]
+            description=f"Task to test the {method} function with "
+            f"inlier-specific variable configurations using {config_name} configuration.",
+            input_={"method": method, "kwargs": kwargs},
+            databases=[{"label": config["database_label"]}],
         )
 
-        if config.get('expected_failure', False):
+        if config.get("expected_failure", False):
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
-                extract_data_from_result(client, task)  # Output not necessary when tasks have failed
+                extract_data_from_result(
+                    client, task
+                )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get('expected_error_type')
+            expected_errors = config.get("expected_error_type")
             if expected_errors:
                 # Convert single error type to list for uniform handling
                 if not isinstance(expected_errors, list):
                     expected_errors = [expected_errors]
 
                 # Check if the raised exception matches any of the expected types
-                error_matched = any(isinstance(exc_info.value, expected_error) for expected_error in expected_errors)
-                assert error_matched, f"Expected one of {[err.__name__ for err in expected_errors]} but got {type(exc_info.value).__name__}"
+                error_matched = any(
+                    isinstance(exc_info.value, expected_error)
+                    for expected_error in expected_errors
+                )
+                assert error_matched, (
+                    f"Expected one of {[err.__name__ for err in expected_errors]} "
+                    f"but got {type(exc_info.value).__name__}"
+                )
 
             print(f"Expected failure occurred for {config_name}: {exc_info.value}")
         else:
             # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
-            assert determine_statistics_acceptance({},
-                                                   {}), f"Centralised and federated statistics deviate too much for {config_name} configuration"
+            categorical_statistics, numerical_statistics = extract_data_from_result(
+                client, task
+            )
+            assert determine_statistics_acceptance(
+                {}, {}
+            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
-    @pytest.mark.parametrize("method", ["central"])  # 'partial_general_statistics' does not support return_partial
-    @pytest.mark.parametrize("config_name",
-                             ["standard_dataset", "standard_dataset_bad_actor", "standard_dataset_incorrect_input",
-                              "rare_dataset", "non_existent_dataset_standard_input"])
-    def test_algorithm_return_partial(self, authentication, algorithm_image_name, test_configurations, test_methods,
-                                      method, config_name):
+    @pytest.mark.parametrize(
+        "method", ["central"]
+    )  # 'partial_general_statistics' does not support return_partial
+    @pytest.mark.parametrize(
+        "config_name",
+        [
+            "standard_dataset",
+            "standard_dataset_bad_actor",
+            "standard_dataset_incorrect_input",
+            "rare_dataset",
+            "non_existent_dataset_standard_input",
+        ],
+    )
+    def test_algorithm_return_partial(
+        self,
+        authentication,
+        algorithm_image_name,
+        test_configurations,
+        test_methods,
+        method,
+        config_name,
+    ):
         """
         Test algorithm with return_partial functionality.
 
@@ -560,12 +708,14 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Skip if method doesn't support return_partial scenario
-        if 'return_partial' not in method_config:
-            pytest.skip(f"Return partial functionality not supported for {method} method")
+        if "return_partial" not in method_config:
+            pytest.skip(
+                f"Return partial functionality not supported for {method} method"
+            )
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config['return_partial'].copy()
-        kwargs["variables_to_describe"] = config['variables_to_describe_basic']
+        kwargs = method_config["return_partial"].copy()
+        kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -573,40 +723,66 @@ class TestAlgorithmComponent:
             organizations=[1],
             name=f"Test {method} algorithm run with return_partial - {config_name}",
             image=algorithm_image_name,
-            description=f'Task to test the {method} function with return_partial functionality using {config_name} configuration.',
-            input_={'method': method, "kwargs": kwargs},
-            databases=[{'label': config['database_label']}]
+            description=f"Task to test the {method} function "
+            f"with return_partial functionality using {config_name} configuration.",
+            input_={"method": method, "kwargs": kwargs},
+            databases=[{"label": config["database_label"]}],
         )
 
-        if config.get('expected_failure', False):
+        if config.get("expected_failure", False):
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
-                extract_data_from_result(client, task)  # Output not necessary when tasks have failed
+                extract_data_from_result(
+                    client, task
+                )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get('expected_error_type')
+            expected_errors = config.get("expected_error_type")
             if expected_errors:
                 # Convert single error type to list for uniform handling
                 if not isinstance(expected_errors, list):
                     expected_errors = [expected_errors]
 
                 # Check if the raised exception matches any of the expected types
-                error_matched = any(isinstance(exc_info.value, expected_error) for expected_error in expected_errors)
-                assert error_matched, f"Expected one of {[err.__name__ for err in expected_errors]} but got {type(exc_info.value).__name__}"
+                error_matched = any(
+                    isinstance(exc_info.value, expected_error)
+                    for expected_error in expected_errors
+                )
+                assert error_matched, (
+                    f"Expected one of {[err.__name__ for err in expected_errors]} "
+                    f"but got {type(exc_info.value).__name__}"
+                )
 
             print(f"Expected failure occurred for {config_name}: {exc_info.value}")
         else:
             # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
-            assert determine_statistics_acceptance({},
-                                                   {}), f"Centralised and federated statistics deviate too much for {config_name} configuration"
+            categorical_statistics, numerical_statistics = extract_data_from_result(
+                client, task
+            )
+            assert determine_statistics_acceptance(
+                {}, {}
+            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
-    @pytest.mark.parametrize("config_name",
-                             ["standard_dataset", "standard_dataset_bad_actor", "standard_dataset_incorrect_input",
-                              "rare_dataset", "non_existent_dataset_standard_input"])
-    def test_algorithm_parameter_galore(self, authentication, algorithm_image_name, test_configurations, test_methods,
-                                        method, config_name):
+    @pytest.mark.parametrize(
+        "config_name",
+        [
+            "standard_dataset",
+            "standard_dataset_bad_actor",
+            "standard_dataset_incorrect_input",
+            "rare_dataset",
+            "non_existent_dataset_standard_input",
+        ],
+    )
+    def test_algorithm_parameter_galore(
+        self,
+        authentication,
+        algorithm_image_name,
+        test_configurations,
+        test_methods,
+        method,
+        config_name,
+    ):
         """
         Test algorithm with all parameters combined (parameter galore).
 
@@ -620,21 +796,25 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Skip if method doesn't support parameter_galore scenario
-        if 'parameter_galore' not in method_config:
-            pytest.skip(f"Parameter galore functionality not supported for {method} method")
+        if "parameter_galore" not in method_config:
+            pytest.skip(
+                f"Parameter galore functionality not supported for {method} method"
+            )
 
         # Skip if configuration doesn't support stratification (required for parameter_galore)
-        if config['variables_to_stratify'] is None:
-            pytest.skip(f"Stratification not supported for {config_name} configuration, required for parameter_galore")
+        if config["variables_to_stratify"] is None:
+            pytest.skip(
+                f"Stratification not supported for {config_name} configuration, required for parameter_galore"
+            )
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config['parameter_galore'].copy()
-        kwargs["variables_to_describe"] = config['variables_to_describe_basic']
-        kwargs["variables_to_stratify"] = config['variables_to_stratify']
+        kwargs = method_config["parameter_galore"].copy()
+        kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
+        kwargs["variables_to_stratify"] = config["variables_to_stratify"]
 
         # Only add organisation_ids if the method supports it
         if "organisation_ids" in kwargs:
-            kwargs["organisation_ids"] = config['organisation_subset']
+            kwargs["organisation_ids"] = config["organisation_subset"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -642,93 +822,110 @@ class TestAlgorithmComponent:
             organizations=[1],
             name=f"Test {method} algorithm run with parameter galore - {config_name}",
             image=algorithm_image_name,
-            description=f'Task to test the {method} function with all parameters combined using {config_name} configuration.',
-            input_={'method': method, "kwargs": kwargs},
-            databases=[{'label': config['database_label']}]
+            description=f"Task to test the {method} function "
+            f"with all parameters combined using {config_name} configuration.",
+            input_={"method": method, "kwargs": kwargs},
+            databases=[{"label": config["database_label"]}],
         )
 
-        if config.get('expected_failure', False):
+        if config.get("expected_failure", False):
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
-                extract_data_from_result(client, task)  # Output not necessary when tasks have failed
+                extract_data_from_result(
+                    client, task
+                )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get('expected_error_type')
+            expected_errors = config.get("expected_error_type")
             if expected_errors:
                 # Convert single error type to list for uniform handling
                 if not isinstance(expected_errors, list):
                     expected_errors = [expected_errors]
 
                 # Check if the raised exception matches any of the expected types
-                error_matched = any(isinstance(exc_info.value, expected_error) for expected_error in expected_errors)
-                assert error_matched, f"Expected one of {[err.__name__ for err in expected_errors]} but got {type(exc_info.value).__name__}"
+                error_matched = any(
+                    isinstance(exc_info.value, expected_error)
+                    for expected_error in expected_errors
+                )
+                assert error_matched, (
+                    f"Expected one of {[err.__name__ for err in expected_errors]} "
+                    f"but got {type(exc_info.value).__name__}"
+                )
 
             print(f"Expected failure occurred for {config_name}: {exc_info.value}")
         else:
             # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(client, task)
-            assert determine_statistics_acceptance({},
-                                                   {}), f"Centralised and federated statistics deviate too much for {config_name} configuration"
+            categorical_statistics, numerical_statistics = extract_data_from_result(
+                client, task
+            )
+            assert determine_statistics_acceptance(
+                {}, {}
+            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
 
 def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """"""
     # Wait for results to be ready
     print("Waiting for results")
-    task_id = task['id']
+    task_id = task["id"]
     result = client.wait_for_results(task_id)
 
     # Check if there are any (un-)expected errors in the log
     run_info = client.run.from_task(task_id)
-    log = run_info['data'][0]['log']
+    log = run_info["data"][0]["log"]
 
-    if 'Traceback' in log:
+    if "Traceback" in log:
         print(f"Error found in task log: {log}")
 
         # Extract the actual error from the log
-        error_lines = [line for line in log.split('\n') if line.startswith('error >')]
+        error_lines = [line for line in log.split("\n") if line.startswith("error >")]
         if error_lines:
             # Look for traceback information
-            if 'Traceback' in log:
+            if "Traceback" in log:
                 # Extract the exception type and message from the traceback
-                lines = log.split('\n')
+                lines = log.split("\n")
                 for i, line in enumerate(lines):
-                    if line.strip().startswith('vantage6.algorithm.tools.exceptions.'):
+                    if line.strip().startswith("vantage6.algorithm.tools.exceptions."):
                         error_class_line = line.strip()
-                        error_message = error_class_line.split(': ', 1)[
-                            1] if ': ' in error_class_line else "Unknown error"
-                        if 'UserInputError' in error_class_line:
+                        error_message = (
+                            error_class_line.split(": ", 1)[1]
+                            if ": " in error_class_line
+                            else "Unknown error"
+                        )
+                        if "UserInputError" in error_class_line:
                             raise UserInputError(error_message)
-                        elif 'CollectResultsError' in error_class_line:
+                        elif "CollectResultsError" in error_class_line:
                             raise CollectResultsError(error_message)
-                        elif 'PrivacyThresholdViolation' in error_class_line:
+                        elif "PrivacyThresholdViolation" in error_class_line:
                             raise PrivacyThresholdViolation(error_message)
-                        elif 'InputError' in error_class_line:
+                        elif "InputError" in error_class_line:
                             raise InputError(error_message)
-                        elif 'AlgorithmError' in error_class_line:
+                        elif "AlgorithmError" in error_class_line:
                             raise AlgorithmError(error_message)
-                        elif 'CollectOrganizationError' in error_class_line:
+                        elif "CollectOrganizationError" in error_class_line:
                             raise CollectOrganizationError(error_message)
-                        elif 'DataError' in error_class_line:
+                        elif "DataError" in error_class_line:
                             raise DataError(error_message)
                         else:
                             # If the error class is not recognised, raise a generic AlgorithmError
-                            raise AlgorithmError(f"Unknown error type in log: {error_class_line}")
+                            raise AlgorithmError(
+                                f"Unknown error type in log: {error_class_line}"
+                            )
 
         # Fallback to generic error with the error message
-        error_message = error_lines[-1].replace('error >', '').strip()
-        if error_message and error_message != 'None':
+        error_message = error_lines[-1].replace("error >", "").strip()
+        if error_message and error_message != "None":
             raise AlgorithmError(f"Algorithm execution failed: {error_message}")
 
     # Check if the result is not None
     assert result is not None, "Result should not be None"
 
     # Extract the aggregated results
-    result = json.loads(result['data'][0]['result'])
+    result = json.loads(result["data"][0]["result"])
 
     # Extract categorical and numerical statistics
-    categorical_stats = result.get('categorical_general_statistics', None)
-    numerical_stats = result.get('numerical_general_statistics', None)
+    categorical_stats = result.get("categorical_general_statistics", None)
+    numerical_stats = result.get("numerical_general_statistics", None)
 
     # Check if statistics are present
     assert categorical_stats is not None, "Categorical statistics should not be None"
@@ -737,8 +934,12 @@ def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
     # Read the JSON strings into dictionaries
     categorical_stats = pd.read_json(StringIO(categorical_stats))
     numerical_stats = pd.read_json(StringIO(numerical_stats))
-    assert isinstance(categorical_stats, pd.DataFrame), "Categorical statistics should be a pandas DataFrame"
-    assert isinstance(numerical_stats, pd.DataFrame), "Numerical statistics should be a pandas DataFrame"
+    assert isinstance(
+        categorical_stats, pd.DataFrame
+    ), "Categorical statistics should be a pandas DataFrame"
+    assert isinstance(
+        numerical_stats, pd.DataFrame
+    ), "Numerical statistics should be a pandas DataFrame"
 
     print(f"Final categorical stats shape: {categorical_stats.shape}", flush=True)
     print(f"Final numerical stats shape: {numerical_stats.shape}", flush=True)
@@ -746,9 +947,11 @@ def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
     return categorical_stats, numerical_stats
 
 
-def determine_statistics_acceptance(federated_result: Dict[str, Any],
-                                    central_result: Dict[str, Any],
-                                    tolerance: float = 1e-6) -> bool:
+def determine_statistics_acceptance(
+    federated_result: Dict[str, Any],
+    central_result: Dict[str, Any],
+    tolerance: float = 1e-6,
+) -> bool:
     """
     Assert that federated and central statistical results are equivalent within tolerance.
 

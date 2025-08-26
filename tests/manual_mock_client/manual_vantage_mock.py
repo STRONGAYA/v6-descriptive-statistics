@@ -11,6 +11,7 @@ installed. This can be done by running:
 
     pip install vantage6-algorithm-tools
 """
+
 from vantage6.algorithm.tools.mock_client import MockAlgorithmClient
 from pathlib import Path
 
@@ -21,19 +22,23 @@ current_path = Path(__file__).parent
 client = MockAlgorithmClient(
     datasets=[
         # Data for the first organisation
-        [{
-            "database": current_path / "test_data_one.csv",
-            "db_type": "csv",
-            "input_data": {}
-        }],
+        [
+            {
+                "database": current_path / "test_data_one.csv",
+                "db_type": "csv",
+                "input_data": {},
+            }
+        ],
         # Data for the second organisation
-        [{
-            "database": current_path / "test_data_two.csv",
-            "db_type": "csv",
-            "input_data": {}
-        }]
+        [
+            {
+                "database": current_path / "test_data_two.csv",
+                "db_type": "csv",
+                "input_data": {},
+            }
+        ],
     ],
-    module="v6-descriptive-statistics"
+    module="v6-descriptive-statistics",
 )
 
 # List mock organisations
@@ -46,10 +51,12 @@ central_task = client.task.create(
     input_={
         "method": "central",
         "kwargs": {
-            "variables_to_describe": {"Temperature Tolerance (K)": {"datatype": "numerical"}},
+            "variables_to_describe": {
+                "Temperature Tolerance (K)": {"datatype": "numerical"}
+            },
             "variables_to_stratify": None,
             "organisation_ids": None,
-        }
+        },
     },
     organizations=[org_ids[0]],
 )
@@ -61,14 +68,14 @@ task = client.task.create(
     input_={
         "method": "partial_general_statistics",
         "kwargs": {
-            "variables_to_describe": {"Gender": {"datatype": "categorical",
-                                                 "inliers": ("M", "F")},
-                                      "Age": {"datatype": "numerical",
-                                              "inliers": (15, 39)}},
+            "variables_to_describe": {
+                "Gender": {"datatype": "categorical", "inliers": ("M", "F")},
+                "Age": {"datatype": "numerical", "inliers": (15, 39)},
+            },
             "variables_to_stratify": None,
-        }
+        },
     },
-    organizations=org_ids
+    organizations=org_ids,
 )
 print(task)
 

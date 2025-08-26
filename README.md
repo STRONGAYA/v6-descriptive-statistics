@@ -6,7 +6,7 @@
 ![Tests](https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Test%20Suite/badge.svg?branch=revamped-version)
 ![Coverage](https://raw.githubusercontent.com/STRONGAYA/v6-descriptive-statistics/revamped-version/tests/coverage-badge.svg)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Vantage6 4.1.0+](https://img.shields.io/badge/vantage6-4.1.0%2B%20%7C%204.2.0%2B-brightgreen.svg)](https://vantage6.ai)
+[![Vantage6 4.12+](https://img.shields.io/badge/vantage6-4.12%2B-brightgreen.svg)](https://vantage6.ai)
 [![Licence](https://img.shields.io/badge/Licence-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Vantage6 algorithm that retrieves descriptive statistics with comprehensive Vantage6 integration testing.
@@ -21,8 +21,7 @@ template generator.
 ## Tested Vantage6 Versions
 
 This algorithm is continuously tested against the following Vantage6 versions:
-- **Vantage6 4.2.0** - Latest stable version
-- **Vantage6 4.1.0** - Previous stable version
+- **Vantage6 4.12** - Current tested version
 
 ## Features
 

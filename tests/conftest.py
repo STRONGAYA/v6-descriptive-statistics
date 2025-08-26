@@ -472,6 +472,17 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "docker: Tests that require Docker")
 
 
+@pytest.fixture
+def variables_config():
+    """Fixture providing test variable configuration for unit tests."""
+    return {
+        "Temperature Tolerance (K)": {"datatype": "numerical"},
+        "Social Structure": {"datatype": "categorical"},
+        "Lifespan (years)": {"datatype": "numerical"},
+        "Habitat": {"datatype": "categorical"},
+    }
+
+
 def pytest_collection_modifyitems(config, items):
     """Modify the test collection to add markers based on test names/paths."""
     for item in items:

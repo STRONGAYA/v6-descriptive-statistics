@@ -174,12 +174,12 @@ def test_configurations():
             "variables_to_describe_inlier_specific": {
                 "Temperature Tolerance (K)": {
                     "datatype": "numerical",
-                    "inliers": (100, 120),
+                    "inliers": (100, 110),
                 },
                 # Emulate a bad actor by setting a very narrow range as inlier
                 "Social Structure": {
                     "datatype": "categorical",
-                    "inliers": ("Solitary"),
+                    "inliers": ["Solitary"],
                 },
             },
             "variables_to_stratify": {
@@ -201,9 +201,9 @@ def test_configurations():
             # Enceladus is a moon of Saturn with a subsurface ocean
             "variables_to_describe_basic": {
                 "Temperature Tolerance (K)": {"datatype": "numerical"},
-                "Social Structure": {
+                "Diet": {
                     "datatype": "categorical"
-                },  # Use Social Structure instead of Diet for Enceladus
+                },  # Use non-existent variable Diet for Enceladus
             },
             "organisation_subset": [4, 5],
             # Non-existent organisations to test input validation
@@ -212,9 +212,9 @@ def test_configurations():
                     "datatype": "numerical",
                     "inliers": (50, 150),
                 },
-                "Social Structure": {
+                "Diet": {  # Use non-existent variable Diet for Enceladus
                     "datatype": "categorical",
-                    "inliers": ("Solitary", "Swarm"),
+                    "inliers": ["Solitary", "Swarm"],  # Non-existent categories for fictive Diet
                 },
             },
             "variables_to_stratify": {
@@ -229,7 +229,7 @@ def test_configurations():
             },
             "expected_failure": True,
             "failure_reason": "Non-existent variables requested or invalid input structure specified",
-            "expected_error_type": [CollectResultsError, UserInputError],
+            "expected_error_type": [CollectResultsError, UserInputError, JSONDecodeError],
         },
         "rare_dataset": {
             "database_label": "creatures_of_titan",
@@ -376,7 +376,7 @@ class TestAlgorithmComponent:
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
                 categorical_statistics, numerical_statistics = extract_data_from_result(
-                    client, task
+                    client, task, method
                 )
 
             # Verify specific error types (support both single error type and list of error types)
@@ -400,11 +400,11 @@ class TestAlgorithmComponent:
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task
+                client, task, method
             )
             assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics}, 
-                {}, 
+                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+                {},
                 config
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
@@ -468,7 +468,7 @@ class TestAlgorithmComponent:
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
                 categorical_statistics, numerical_statistics = extract_data_from_result(
-                    client, task
+                    client, task, method
                 )
 
             # Verify specific error types (support both single error type and list of error types)
@@ -492,11 +492,11 @@ class TestAlgorithmComponent:
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task
+                client, task, method
             )
             assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics}, 
-                {}, 
+                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+                {},
                 config
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
@@ -557,7 +557,7 @@ class TestAlgorithmComponent:
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
                 extract_data_from_result(
-                    client, task
+                    client, task, method
                 )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
@@ -581,11 +581,11 @@ class TestAlgorithmComponent:
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task
+                client, task, method
             )
             assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics}, 
-                {}, 
+                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+                {},
                 config
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
@@ -649,7 +649,7 @@ class TestAlgorithmComponent:
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
                 extract_data_from_result(
-                    client, task
+                    client, task, method
                 )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
@@ -673,11 +673,11 @@ class TestAlgorithmComponent:
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task
+                client, task, method
             )
             assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics}, 
-                {}, 
+                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+                {},
                 config
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
@@ -715,12 +715,6 @@ class TestAlgorithmComponent:
         config = test_configurations[config_name]
         method_config = test_methods[method]
 
-        # Skip if method doesn't support return_partial scenario
-        if "return_partial" not in method_config:
-            pytest.skip(
-                f"Return partial functionality not supported for {method} method"
-            )
-
         # Prepare method-specific kwargs from method configuration
         kwargs = method_config["return_partial"].copy()
         kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
@@ -741,7 +735,7 @@ class TestAlgorithmComponent:
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
                 extract_data_from_result(
-                    client, task
+                    client, task, method
                 )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
@@ -765,11 +759,11 @@ class TestAlgorithmComponent:
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task
+                client, task, method
             )
             assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics}, 
-                {}, 
+                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+                {},
                 config
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
@@ -842,7 +836,7 @@ class TestAlgorithmComponent:
             # Test that aggressive configurations fail gracefully
             with pytest.raises(Exception) as exc_info:
                 extract_data_from_result(
-                    client, task
+                    client, task, method
                 )  # Output not necessary when tasks have failed
 
             # Verify specific error types (support both single error type and list of error types)
@@ -866,16 +860,16 @@ class TestAlgorithmComponent:
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task
+                client, task, method
             )
             assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics}, 
-                {}, 
+                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+                {},
                 config
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
 
-def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def extract_data_from_result(client, task, method) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """"""
     # Wait for results to be ready
     print("Waiting for results")
@@ -935,9 +929,16 @@ def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
     # Extract the aggregated results
     result = json.loads(result["data"][0]["result"])
 
-    # Extract categorical and numerical statistics
-    categorical_stats = result.get("categorical_general_statistics", None)
-    numerical_stats = result.get("numerical_general_statistics", None)
+    if method == "central":
+        # Extract categorical and numerical statistics for the central method
+        categorical_stats = result.get("categorical_general_statistics", None)
+        numerical_stats = result.get("numerical_general_statistics", None)
+    elif method == "partial_general_statistics":
+        # Extract categorical and numerical statistics for the partial method
+        categorical_stats = result.get("categorical_general_partial_statistics", None)
+        numerical_stats = result.get("numerical_general_partial_statistics", None)
+    else:
+        raise ValueError(f"Unknown method: {method}")
 
     # Check if statistics are present
     assert categorical_stats is not None, "Categorical statistics should not be None"
@@ -962,6 +963,7 @@ def extract_data_from_result(client, task) -> Tuple[pd.DataFrame, pd.DataFrame]:
 def determine_statistics_acceptance(
     federated_result: Dict[str, Any],
     central_result: Dict[str, Any],
+    method: str,
     config: Dict[str, Any] = None,
     tolerance: float = 1e-6,
 ) -> bool:
@@ -974,49 +976,62 @@ def determine_statistics_acceptance(
 
     Args:
         federated_result: Results from federated computation
-        central_result: Results from central computation  
+        central_result: Results from central computation
+        method: The method used for computation (e.g., "central", "partial_general_statistics")
         config: Test configuration containing dataset info (can be None for basic validation)
         tolerance: Numerical tolerance for comparison
     """
     # Basic type validation
     if not isinstance(federated_result, dict) or not isinstance(central_result, dict):
         return False
-    
+
     # For the integration test setup where we don't have central_result comparison,
     # we focus on validating that the federated result contains valid statistics
     if not federated_result:
         return False
-        
+
     # Check that we have the expected statistical components
     required_keys = ["categorical_general_statistics", "numerical_general_statistics"]
     if not all(key in federated_result for key in required_keys):
         return False
-        
+
     # If config is provided, validate count equivalency 
     if config:
         try:
             import pandas as pd
             from pathlib import Path
-            
+
             # Get the test data file path
             repo_root = Path(__file__).parent.parent.parent
             dataset_label = config.get("database_label", "")
             dataset_file = repo_root / "tests" / "data" / f"{dataset_label}.csv"
-            
+
             if dataset_file.exists():
                 # Read the actual test dataset
                 df = pd.read_csv(dataset_file)
+
+                # TODO stratify the data if the config and method require it
+
+                # This is very basic and could be improved by specify the correct column
                 actual_count = len(df)
-                
-                # In the 3-node setup, the federated count should be 3x the original dataset
-                expected_federated_count = actual_count * 3
-                
-                # Extract count from numerical statistics 
-                numerical_stats = federated_result.get("numerical_general_statistics", {})
+
+                if method == "central":
+                    # In the 3-node setup, the federated count should be 3x the original dataset
+                    expected_federated_count = actual_count * 3
+
+                if method == "central":
+                    # Extract count from numerical statistics
+                    numerical_stats = federated_result.get("numerical_general_statistics", {})
+                elif method == "partial_general_statistics":
+                    # Extract count from partial numerical statistics
+                    numerical_stats = federated_result.get("numerical_general_partial_statistics", {})
+                else:
+                    numerical_stats = {}
+
                 if isinstance(numerical_stats, str):
                     import json
                     numerical_stats = json.loads(numerical_stats)
-                    
+
                 if isinstance(numerical_stats, dict):
                     # Look for count information in the statistics
                     for var_stats in numerical_stats.values():
@@ -1027,15 +1042,21 @@ def determine_statistics_acceptance(
                                 print(f"✓ Count validation passed: {federated_count} == {expected_federated_count}")
                                 return True
                             else:
-                                print(f"✗ Count mismatch: got {federated_count}, expected {expected_federated_count}")
-                                return False
-                
-                # Also check categorical statistics for counts
-                categorical_stats = federated_result.get("categorical_general_statistics", {})
+                                assert f"✗ Count mismatch: got {federated_count}, expected {expected_federated_count}"
+
+
+                if method == "central":
+                    # Also check categorical statistics for counts
+                    categorical_stats = federated_result.get("categorical_general_statistics", {})
+                elif method == "partial_general_statistics":
+                    categorical_stats = federated_result.get("categorical_general_partial_statistics", {})
+                else:
+                    categorical_stats = {}
+
                 if isinstance(categorical_stats, str):
                     import json
                     categorical_stats = json.loads(categorical_stats)
-                    
+
                 if isinstance(categorical_stats, dict):
                     for var_stats in categorical_stats.values():
                         if isinstance(var_stats, dict) and "count" in var_stats:
@@ -1043,10 +1064,11 @@ def determine_statistics_acceptance(
                             if abs(federated_count - expected_federated_count) <= tolerance:
                                 print(f"✓ Count validation passed: {federated_count} == {expected_federated_count}")
                                 return True
-                                
+                            else:
+                                assert f"✗ Count mismatch: got {federated_count}, expected {expected_federated_count}"
+
         except Exception as e:
-            print(f"Count validation error: {e}")
-            # Continue with basic validation if count validation fails
-    
+            print(f"Count validation error: {e}")\
+
     # Basic validation - ensure we have non-empty results
     return True

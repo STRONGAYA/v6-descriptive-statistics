@@ -22,6 +22,8 @@ from vantage6_strongaya_general.privacy_measures import (
     mask_unnecessary_variables,
 )
 
+from vantage6_strongaya_rdf.collect_sparql_data import collect_sparql_data
+
 
 @data(1)
 @algorithm_client
@@ -65,6 +67,10 @@ def partial_general_statistics(
         ]
     else:
         variables_to_analyse = list(variables_to_describe.keys())
+
+    # Retrieve RDF/SPARQL data if its use is indicated in the data - suboptimal solution, to be improved in the future
+    if "endpoint" in df.columns:
+        df = collect_sparql_data(variables_to_analyse, endpoint=df["endpoint"].iloc[0])
 
     # Mask unnecessary variables by removal - relevant, for example, with csv data
     df = mask_unnecessary_variables(df, variables_to_analyse)
@@ -148,6 +154,10 @@ def partial_aggregate_adjusted_deviation(
         ]
     else:
         variables_to_analyse = list(variables_to_describe.keys())
+
+    # Retrieve RDF/SPARQL data if its use is indicated in the data - suboptimal solution, to be improved in the future
+    if "endpoint" in df.columns:
+        df = collect_sparql_data(variables_to_analyse, endpoint=df["endpoint"].iloc[0])
 
     # Mask unnecessary variables by removal - relevant, for example, with csv data
     df = mask_unnecessary_variables(df, variables_to_analyse)

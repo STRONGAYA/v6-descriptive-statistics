@@ -132,7 +132,8 @@ class TestProjectMiscellaneous:
                     latest_year = max(int(year) for year in years)
                     if current_year - latest_year > 1:
                         print(
-                            f"⚠ Warning: LICENCE file may need year update (found {latest_year}, current {current_year})"
+                            f"⚠ Warning: LICENCE file may need year update "
+                            f"(found {latest_year}, current {current_year})"
                         )
                     else:
                         print("✓ LICENCE file found with recent year")
@@ -152,7 +153,8 @@ class TestProjectMiscellaneous:
 
             if has_placeholder:
                 print(
-                    "⚠ Warning: LICENCE file contains placeholder text that should be replaced with actual copyright holder"
+                    "⚠ Warning: LICENCE file contains placeholder text "
+                    "that should be replaced with actual copyright holder"
                 )
             else:
                 print(

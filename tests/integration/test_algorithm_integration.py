@@ -1080,7 +1080,7 @@ def determine_statistics_acceptance(
     if method == "central":
         # Get organisation subset multiplier
         organization_multiplier = 3  # Default 3-node setup
-        organisation_ids = kwargs.get("organisation_ids", [1,2,3])
+        organisation_ids = kwargs.get("organisation_ids", [1, 2, 3])
         if organisation_ids:
             # If specific organisations selected, adjust multiplier based on the fraction of total nodes
             organization_multiplier = 3 / len(organisation_ids)
@@ -1105,7 +1105,9 @@ def determine_statistics_acceptance(
     # Validate numerical statistics counts
     # DataFrame structure: [variable, statistic, value] (3 columns)
     if not numerical_stats.empty:
-        assert len(numerical_stats.columns) == 3, f"Numerical stats should have 3 columns, got {len(numerical_stats.columns)}"
+        assert (
+            len(numerical_stats.columns) == 3
+        ), f"Numerical stats should have 3 columns, got {len(numerical_stats.columns)}"
 
         # Look for 'count' statistic rows
         count_rows = numerical_stats[numerical_stats.iloc[:, 1] == "count"]
@@ -1126,7 +1128,9 @@ def determine_statistics_acceptance(
     # Validate categorical statistics counts
     # DataFrame structure: [variable, category, count] (3 columns)
     if not categorical_stats.empty:
-        assert len(categorical_stats.columns) == 3, f"Categorical stats should have 3 columns, got {len(categorical_stats.columns)}"
+        assert (
+            len(categorical_stats.columns) == 3
+        ), f"Categorical stats should have 3 columns, got {len(categorical_stats.columns)}"
 
         # Filter out metadata rows (na, outliers)
         data_rows = categorical_stats[

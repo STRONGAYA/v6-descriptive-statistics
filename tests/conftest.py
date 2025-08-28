@@ -377,7 +377,7 @@ def authentication(vantage6_network_session, docker_client) -> Client:
     time.sleep(10)
 
     vantage6_config = {
-        "server_url": docker_client.docker_host,
+        "server_url": "http://localhost",
         "server_port": 7601,
         "server_api": "/api",
         "username": "dev_admin",

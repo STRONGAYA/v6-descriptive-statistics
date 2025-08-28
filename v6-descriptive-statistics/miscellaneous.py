@@ -15,25 +15,25 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
     """
     if not isinstance(variables_to_describe, dict):
         return False
-    
+
     if not variables_to_describe:
         return False
-    
+
     for variable_name, variable_details in variables_to_describe.items():
         if not isinstance(variable_name, str):
             return False
-        
+
         if not isinstance(variable_details, dict):
             return False
-        
+
         # Check required fields
         if "datatype" not in variable_details:
             return False
-            
+
         datatype = variable_details["datatype"]
         if datatype not in ["numerical", "categorical"]:
             return False
-        
+
         # If inliers are specified, validate their structure
         if "inliers" in variable_details:
             inliers = variable_details["inliers"]
@@ -51,5 +51,5 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
                     return False
                 if not all(isinstance(x, str) for x in inliers):
                     return False
-    
+
     return True

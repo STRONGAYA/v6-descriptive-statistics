@@ -214,7 +214,10 @@ def test_configurations():
                 },
                 "Diet": {  # Use non-existent variable Diet for Enceladus
                     "datatype": "categorical",
-                    "inliers": ["Solitary", "Swarm"],  # Non-existent categories for fictive Diet
+                    "inliers": [
+                        "Solitary",
+                        "Swarm",
+                    ],  # Non-existent categories for fictive Diet
                 },
             },
             "variables_to_stratify": {
@@ -229,7 +232,11 @@ def test_configurations():
             },
             "expected_failure": True,
             "failure_reason": "Non-existent variables requested or invalid input structure specified",
-            "expected_error_type": [CollectResultsError, UserInputError, JSONDecodeError],
+            "expected_error_type": [
+                CollectResultsError,
+                UserInputError,
+                JSONDecodeError,
+            ],
         },
         "rare_dataset": {
             "database_label": "creatures_of_titan",
@@ -402,10 +409,15 @@ class TestAlgorithmComponent:
             categorical_statistics, numerical_statistics = extract_data_from_result(
                 client, task, method
             )
-            assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+            determine_statistics_acceptance(
+                {
+                    "categorical_general_statistics": categorical_statistics,
+                    "numerical_general_statistics": numerical_statistics,
+                },
                 {},
-                config
+                method,
+                config["database_label"],
+                kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize(
@@ -494,10 +506,15 @@ class TestAlgorithmComponent:
             categorical_statistics, numerical_statistics = extract_data_from_result(
                 client, task, method
             )
-            assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+            determine_statistics_acceptance(
+                {
+                    "categorical_general_statistics": categorical_statistics,
+                    "numerical_general_statistics": numerical_statistics,
+                },
                 {},
-                config
+                method,
+                config["database_label"],
+                kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
@@ -583,10 +600,15 @@ class TestAlgorithmComponent:
             categorical_statistics, numerical_statistics = extract_data_from_result(
                 client, task, method
             )
-            assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+            determine_statistics_acceptance(
+                {
+                    "categorical_general_statistics": categorical_statistics,
+                    "numerical_general_statistics": numerical_statistics,
+                },
                 {},
-                config
+                method,
+                config["database_label"],
+                kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
@@ -675,10 +697,15 @@ class TestAlgorithmComponent:
             categorical_statistics, numerical_statistics = extract_data_from_result(
                 client, task, method
             )
-            assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+            determine_statistics_acceptance(
+                {
+                    "categorical_general_statistics": categorical_statistics,
+                    "numerical_general_statistics": numerical_statistics,
+                },
                 {},
-                config
+                method,
+                config["database_label"],
+                kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize(
@@ -716,17 +743,17 @@ class TestAlgorithmComponent:
         method_config = test_methods[method]
 
         # Prepare method-specific kwargs from method configuration
-        kwargs = method_config["return_partial"].copy()
+        kwargs = method_config["return_partials"].copy()
         kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
             collaboration=1,
             organizations=[1],
-            name=f"Test {method} algorithm run with return_partial - {config_name}",
+            name=f"Test {method} algorithm run with return_partials - {config_name}",
             image=algorithm_image_name,
             description=f"Task to test the {method} function "
-            f"with return_partial functionality using {config_name} configuration.",
+            f"with return_partials functionality using {config_name} configuration.",
             input_={"method": method, "kwargs": kwargs},
             databases=[{"label": config["database_label"]}],
         )
@@ -761,10 +788,15 @@ class TestAlgorithmComponent:
             categorical_statistics, numerical_statistics = extract_data_from_result(
                 client, task, method
             )
-            assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+            determine_statistics_acceptance(
+                {
+                    "categorical_general_statistics": categorical_statistics,
+                    "numerical_general_statistics": numerical_statistics,
+                },
                 {},
-                config
+                method,
+                config["database_label"],
+                kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
@@ -862,10 +894,15 @@ class TestAlgorithmComponent:
             categorical_statistics, numerical_statistics = extract_data_from_result(
                 client, task, method
             )
-            assert determine_statistics_acceptance(
-                {"categorical_general_statistics": categorical_statistics, "numerical_general_statistics": numerical_statistics},
+            determine_statistics_acceptance(
+                {
+                    "categorical_general_statistics": categorical_statistics,
+                    "numerical_general_statistics": numerical_statistics,
+                },
                 {},
-                config
+                method,
+                config["database_label"],
+                kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
 
@@ -944,131 +981,163 @@ def extract_data_from_result(client, task, method) -> Tuple[pd.DataFrame, pd.Dat
     assert categorical_stats is not None, "Categorical statistics should not be None"
     assert numerical_stats is not None, "Numerical statistics should not be None"
 
-    # Read the JSON strings into dictionaries
-    categorical_stats = pd.read_json(StringIO(categorical_stats))
-    numerical_stats = pd.read_json(StringIO(numerical_stats))
+    # Statistics come as JSON strings that need to be converted to DataFrames
     assert isinstance(
-        categorical_stats, pd.DataFrame
-    ), "Categorical statistics should be a pandas DataFrame"
+        categorical_stats, str
+    ), "Categorical statistics should be a JSON string"
     assert isinstance(
-        numerical_stats, pd.DataFrame
-    ), "Numerical statistics should be a pandas DataFrame"
+        numerical_stats, str
+    ), "Numerical statistics should be a JSON string"
 
-    print(f"Final categorical stats shape: {categorical_stats.shape}", flush=True)
-    print(f"Final numerical stats shape: {numerical_stats.shape}", flush=True)
+    # Convert JSON strings to DataFrames
+    categorical_stats_df = pd.read_json(StringIO(categorical_stats))
+    numerical_stats_df = pd.read_json(StringIO(numerical_stats))
 
-    return categorical_stats, numerical_stats
+    print(f"Final categorical stats shape: {categorical_stats_df.shape}", flush=True)
+    print(f"Final numerical stats shape: {numerical_stats_df.shape}", flush=True)
+
+    return categorical_stats_df, numerical_stats_df
 
 
 def determine_statistics_acceptance(
     federated_result: Dict[str, Any],
     central_result: Dict[str, Any],
     method: str,
-    config: Dict[str, Any] = None,
+    database_label: str,
+    kwargs: Dict[str, Any],
     tolerance: float = 1e-6,
-) -> bool:
+) -> None:
     """
     Assert that federated and central statistical results are equivalent within tolerance.
-    
+
     Focuses on validating count equivalency based on the comment requirements:
     - In the 3-node test setup, counts should be multiplied by 3
     - Reads the appropriate test dataset to get actual counts for validation
+    - Applies same stratification and organisation selection as the algorithm
 
     Args:
-        federated_result: Results from federated computation
+        federated_result: Results from federated computation (DataFrames)
         central_result: Results from central computation
         method: The method used for computation (e.g., "central", "partial_general_statistics")
-        config: Test configuration containing dataset info (can be None for basic validation)
+        database_label: Label of the database/dataset file to validate against
+        kwargs: Algorithm kwargs containing stratification and organization parameters
         tolerance: Numerical tolerance for comparison
+
+    Raises:
+        AssertionError: If validation fails
     """
     # Basic type validation
-    if not isinstance(federated_result, dict) or not isinstance(central_result, dict):
-        return False
+    assert isinstance(federated_result, dict), "Federated result must be a dictionary"
 
     # For the integration test setup where we don't have central_result comparison,
     # we focus on validating that the federated result contains valid statistics
-    if not federated_result:
-        return False
+    assert federated_result, "Federated result should not be empty"
 
-    # Check that we have the expected statistical components
-    required_keys = ["categorical_general_statistics", "numerical_general_statistics"]
-    if not all(key in federated_result for key in required_keys):
-        return False
+    # Validate count equivalency using provided database label and kwargs
+    import pandas as pd
+    from pathlib import Path
 
-    # If config is provided, validate count equivalency 
-    if config:
-        try:
-            import pandas as pd
-            from pathlib import Path
+    # Get the test data file path
+    repo_root = Path(__file__).parent.parent.parent
+    dataset_file = repo_root / "tests" / "data" / f"{database_label}.csv"
 
-            # Get the test data file path
-            repo_root = Path(__file__).parent.parent.parent
-            dataset_label = config.get("database_label", "")
-            dataset_file = repo_root / "tests" / "data" / f"{dataset_label}.csv"
+    assert dataset_file.exists(), f"Test dataset file not found: {dataset_file}"
 
-            if dataset_file.exists():
-                # Read the actual test dataset
-                df = pd.read_csv(dataset_file)
+    # Read the actual test dataset
+    df = pd.read_csv(dataset_file)
 
-                # TODO stratify the data if the config and method require it
-
-                # This is very basic and could be improved by specify the correct column
-                actual_count = len(df)
-
-                if method == "central":
-                    # In the 3-node setup, the federated count should be 3x the original dataset
-                    expected_federated_count = actual_count * 3
-
-                if method == "central":
-                    # Extract count from numerical statistics
-                    numerical_stats = federated_result.get("numerical_general_statistics", {})
-                elif method == "partial_general_statistics":
-                    # Extract count from partial numerical statistics
-                    numerical_stats = federated_result.get("numerical_general_partial_statistics", {})
-                else:
-                    numerical_stats = {}
-
-                if isinstance(numerical_stats, str):
-                    import json
-                    numerical_stats = json.loads(numerical_stats)
-
-                if isinstance(numerical_stats, dict):
-                    # Look for count information in the statistics
-                    for var_stats in numerical_stats.values():
-                        if isinstance(var_stats, dict) and "count" in var_stats:
-                            federated_count = var_stats["count"]
-                            # Validate that the federated count matches expected (3x original)
-                            if abs(federated_count - expected_federated_count) <= tolerance:
-                                print(f"✓ Count validation passed: {federated_count} == {expected_federated_count}")
-                                return True
-                            else:
-                                assert f"✗ Count mismatch: got {federated_count}, expected {expected_federated_count}"
+    # Apply data stratification if specified in kwargs
+    variables_to_stratify = kwargs.get("variables_to_stratify")
+    if variables_to_stratify:
+        for var_name, var_config in variables_to_stratify.items():
+            if var_name in df.columns:
+                if var_config.get("datatype") == "int":
+                    start = var_config.get("start")
+                    end = var_config.get("end")
+                    if start is not None:
+                        df = df[df[var_name] >= start]
+                    if end is not None:
+                        df = df[df[var_name] <= end]
+                elif var_config.get("datatype") == "categorical":
+                    values = var_config.get("values", [])
+                    if values:
+                        df = df[df[var_name].isin(values)]
 
 
-                if method == "central":
-                    # Also check categorical statistics for counts
-                    categorical_stats = federated_result.get("categorical_general_statistics", {})
-                elif method == "partial_general_statistics":
-                    categorical_stats = federated_result.get("categorical_general_partial_statistics", {})
-                else:
-                    categorical_stats = {}
+    if method == "central":
+        # Get organisation subset multiplier
+        organization_multiplier = 3  # Default 3-node setup
+        organisation_ids = kwargs.get("organisation_ids", [1,2,3])
+        if organisation_ids:
+            # If specific organisations selected, adjust multiplier based on the fraction of total nodes
+            organization_multiplier = 3 / len(organisation_ids)
 
-                if isinstance(categorical_stats, str):
-                    import json
-                    categorical_stats = json.loads(categorical_stats)
+    elif method == "partial_general_statistics":
+        # Data is distributed across 3 organisations in the test setup
+        organization_multiplier = 3
+    else:
+        raise ValueError(f"Unknown method: {method}")
 
-                if isinstance(categorical_stats, dict):
-                    for var_stats in categorical_stats.values():
-                        if isinstance(var_stats, dict) and "count" in var_stats:
-                            federated_count = var_stats["count"]
-                            if abs(federated_count - expected_federated_count) <= tolerance:
-                                print(f"✓ Count validation passed: {federated_count} == {expected_federated_count}")
-                                return True
-                            else:
-                                assert f"✗ Count mismatch: got {federated_count}, expected {expected_federated_count}"
+    actual_count = len(df)
+    expected_federated_count = actual_count / organization_multiplier
 
-        except Exception as e:
-            print(f"Count validation error: {e}")\
+    # Extract statistics DataFrames
+    numerical_stats = federated_result.get(
+        "numerical_general_statistics", pd.DataFrame()
+    )
+    categorical_stats = federated_result.get(
+        "categorical_general_statistics", pd.DataFrame()
+    )
 
-    # Basic validation - ensure we have non-empty results
-    return True
+    # Validate numerical statistics counts
+    # DataFrame structure: [variable, statistic, value] (3 columns)
+    if not numerical_stats.empty:
+        assert len(numerical_stats.columns) == 3, f"Numerical stats should have 3 columns, got {len(numerical_stats.columns)}"
+
+        # Look for 'count' statistic rows
+        count_rows = numerical_stats[numerical_stats.iloc[:, 1] == "count"]
+        if not count_rows.empty:
+            for _, row in count_rows.iterrows():
+                variable_name = row.iloc[0]
+                federated_count = float(row.iloc[2])  # value column
+                assert abs(federated_count - expected_federated_count) <= tolerance, (
+                    f"Numerical count mismatch for {variable_name}: "
+                    f"got {federated_count}, expected {expected_federated_count} "
+                    f"(tolerance: {tolerance})"
+                )
+                print(
+                    f"✓ Numerical count validation passed for {variable_name}: "
+                    f"{federated_count} == {expected_federated_count}"
+                )
+
+    # Validate categorical statistics counts
+    # DataFrame structure: [variable, category, count] (3 columns)
+    if not categorical_stats.empty:
+        assert len(categorical_stats.columns) == 3, f"Categorical stats should have 3 columns, got {len(categorical_stats.columns)}"
+
+        # Filter out metadata rows (na, outliers)
+        data_rows = categorical_stats[
+            ~categorical_stats.iloc[:, 1].isin(["na", "outliers"])
+        ]
+
+        if not data_rows.empty:
+            # Sum all counts to get total number of records processed
+            total_federated_count = data_rows.iloc[:, 2].sum()
+
+            # For categorical data, we expect the total count across all variables/categories
+            # to match the expected count times the number of categorical variables
+            num_categorical_vars = len(data_rows.iloc[:, 0].unique())
+            expected_total_count = expected_federated_count * num_categorical_vars
+
+            assert abs(total_federated_count - expected_total_count) <= tolerance, (
+                f"Categorical total count mismatch: "
+                f"got {total_federated_count}, expected {expected_total_count} "
+                f"({num_categorical_vars} variables × {expected_federated_count} records each) "
+                f"(tolerance: {tolerance})"
+            )
+            print(
+                f"✓ Categorical count validation passed: "
+                f"{total_federated_count} == {expected_total_count} "
+                f"({num_categorical_vars} variables)"
+            )
+    print("✓ All count validations passed")

@@ -51,9 +51,7 @@ central_task = client.task.create(
     input_={
         "method": "central",
         "kwargs": {
-            "variables_to_describe": {
-                "Temperature Tolerance (K)": {"datatype": "numerical"}
-            },
+            "variables_to_describe": {"Age": {"datatype": "numerical"}},
             "variables_to_stratify": None,
             "organisation_ids": None,
         },

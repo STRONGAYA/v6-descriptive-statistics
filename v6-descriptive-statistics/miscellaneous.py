@@ -1,6 +1,22 @@
-from typing import Dict
+from typing import Dict, Union, List, TypedDict
 
-from vantage6_strongaya_general.miscellaneous import VariableDetails
+# Define VariableDetails type locally to avoid external dependency during testing
+class CategoricalDetails(TypedDict):
+    datatype: str
+    inliers: List[str]
+
+class NonCategoricalDetails(TypedDict):
+    datatype: str
+    inliers: List[Union[int, float]]
+
+VariableDetails = Union[CategoricalDetails, NonCategoricalDetails]
+
+# Try to import from vantage6_strongaya_general, fall back to local definition if not available
+try:
+    from vantage6_strongaya_general.miscellaneous import VariableDetails
+except ImportError:
+    # Use local definition defined above
+    pass
 
 
 def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> bool:

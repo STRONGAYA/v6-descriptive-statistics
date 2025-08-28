@@ -153,7 +153,7 @@ def test_configurations():
                 },
                 "Social Structure": {
                     "datatype": "categorical",
-                    "inliers": ("Organic Compounds", "Minerals"),
+                    "inliers": ["Pack", "Colony"],
                 },
             },
             "variables_to_stratify": {
@@ -1049,19 +1049,40 @@ def determine_statistics_acceptance(
     # Apply data stratification if specified in kwargs
     variables_to_stratify = kwargs.get("variables_to_stratify")
     if variables_to_stratify:
+        # Convert the test format to the format expected by apply_data_stratification
+        stratification_params = {}
         for var_name, var_config in variables_to_stratify.items():
             if var_name in df.columns:
-                if var_config.get("datatype") == "int":
+                if var_config.get("datatype") == "categorical":
+                    values = var_config.get("values", [])
+                    if values:
+                        stratification_params[var_name] = values
+                elif var_config.get("datatype") == "int":
+                    # Create range dict for numerical stratification
+                    range_dict = {}
                     start = var_config.get("start")
                     end = var_config.get("end")
+                    if start is not None:
+                        range_dict["start"] = start
+                    if end is not None:
+                        range_dict["end"] = end
+                    if range_dict:
+                        stratification_params[var_name] = range_dict
+        
+        # Apply stratification using library-compatible format
+        if stratification_params:
+            for var_name, params in stratification_params.items():
+                if isinstance(params, list):
+                    # Categorical stratification
+                    df = df[df[var_name].isin(params)]
+                elif isinstance(params, dict):
+                    # Range stratification
+                    start = params.get("start")
+                    end = params.get("end")
                     if start is not None:
                         df = df[df[var_name] >= start]
                     if end is not None:
                         df = df[df[var_name] <= end]
-                elif var_config.get("datatype") == "categorical":
-                    values = var_config.get("values", [])
-                    if values:
-                        df = df[df[var_name].isin(values)]
 
     # Apply inlier filtering if specified in variables_to_describe
     variables_to_describe = kwargs.get("variables_to_describe", {})
@@ -1082,8 +1103,8 @@ def determine_statistics_acceptance(
         organization_multiplier = 3  # Default 3-node setup
         organisation_ids = kwargs.get("organisation_ids", [1, 2, 3])
         if organisation_ids:
-            # If specific organisations selected, adjust multiplier based on the fraction of total nodes
-            organization_multiplier = 3 / len(organisation_ids)
+            # If specific organisations selected, adjust multiplier based on the number of selected nodes
+            organization_multiplier = len(organisation_ids)
 
     elif method == "partial_general_statistics":
         # Data is distributed across 3 organisations in the test setup
@@ -1092,7 +1113,8 @@ def determine_statistics_acceptance(
         raise ValueError(f"Unknown method: {method}")
 
     actual_count = len(df)
-    expected_federated_count = actual_count / organization_multiplier
+    # In federated setup, each node processes the same dataset, so total count = actual_count * organization_multiplier
+    expected_federated_count = actual_count * organization_multiplier
 
     # Extract statistics DataFrames
     numerical_stats = federated_result.get(

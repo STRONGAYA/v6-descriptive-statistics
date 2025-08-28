@@ -1063,6 +1063,19 @@ def determine_statistics_acceptance(
                     if values:
                         df = df[df[var_name].isin(values)]
 
+    # Apply inlier filtering if specified in variables_to_describe
+    variables_to_describe = kwargs.get("variables_to_describe", {})
+    for var_name, var_config in variables_to_describe.items():
+        if var_name in df.columns and "inliers" in var_config:
+            inliers = var_config["inliers"]
+            if var_config.get("datatype") == "numerical":
+                # Assume inliers is a tuple (min, max)
+                if isinstance(inliers, (tuple, list)) and len(inliers) == 2:
+                    df = df[(df[var_name] >= inliers[0]) & (df[var_name] <= inliers[1])]
+            elif var_config.get("datatype") == "categorical":
+                # Assume inliers is a list/tuple of allowed categories
+                if isinstance(inliers, (tuple, list)):
+                    df = df[df[var_name].isin(inliers)]
 
     if method == "central":
         # Get organisation subset multiplier

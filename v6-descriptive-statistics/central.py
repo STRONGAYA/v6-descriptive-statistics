@@ -26,7 +26,6 @@ def central(
     variables_to_describe: Dict[str, VariableDetails],
     variables_to_stratify: StratificationDetails = None,
     organisation_ids: List[int] = None,
-    return_partials: bool = False,
 ) -> Dict[str, Any]:
     """
     Central function to aggregate descriptive statistics from multiple organisations.
@@ -50,7 +49,6 @@ def central(
                                                                     }
         organisation_ids (list[int], optional): List of organisation IDs to include.
                                                 Defaults to None - therewith including all organisations.
-        return_partials (bool, optional): Whether to return partial results. Defaults to False.
 
     Returns:
         Any: A dictionary containing the aggregated descriptive statistics and
@@ -138,9 +136,4 @@ def central(
     )
 
     # Return the final results of the algorithm
-    if return_partials:
-        results["partial_results"] = {
-            "general_statistics": results_general_statistics,
-            "aggregate_adjusted_deviation": results_deviation,
-        }
     return results

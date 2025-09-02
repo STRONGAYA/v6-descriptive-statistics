@@ -73,15 +73,10 @@ def test_methods():
             "inlier_specific": {
                 "variables_to_describe": None,  # Will be filled from config (inlier_specific)
             },
-            "return_partials": {
-                "variables_to_describe": None,  # Will be filled from config
-                "return_partials": True,  # Method-specific parameter
-            },
             "parameter_galore": {
                 "variables_to_describe": None,  # Will be filled from config
                 "variables_to_stratify": None,  # Will be filled from config
                 "organisation_ids": None,  # Will be filled from config
-                "return_partials": True,  # Method-specific parameter
             },
         },
         "partial_general_statistics": {
@@ -708,97 +703,6 @@ class TestAlgorithmComponent:
                 kwargs,
             ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
 
-    @pytest.mark.parametrize(
-        "method", ["central"]
-    )  # 'partial_general_statistics' does not support return_partial
-    @pytest.mark.parametrize(
-        "config_name",
-        [
-            "standard_dataset",
-            "standard_dataset_bad_actor",
-            "standard_dataset_incorrect_input",
-            "rare_dataset",
-            "non_existent_dataset_standard_input",
-        ],
-    )
-    def test_algorithm_return_partial(
-        self,
-        authentication,
-        algorithm_image_name,
-        test_configurations,
-        test_methods,
-        method,
-        config_name,
-    ):
-        """
-        Test algorithm with return_partial functionality.
-
-        CUSTOMISATION REQUIRED:
-        - Ensure your algorithm supports return_partial or equivalent parameters
-        - Update kwargs preparation for partial return logic
-        - Modify validation to account for partial results
-        """
-        client = authentication
-        config = test_configurations[config_name]
-        method_config = test_methods[method]
-
-        # Prepare method-specific kwargs from method configuration
-        kwargs = method_config["return_partials"].copy()
-        kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
-
-        # Create a task for the client to retrieve the descriptive data
-        task = client.task.create(
-            collaboration=1,
-            organizations=[1],
-            name=f"Test {method} algorithm run with return_partials - {config_name}",
-            image=algorithm_image_name,
-            description=f"Task to test the {method} function "
-            f"with return_partials functionality using {config_name} configuration.",
-            input_={"method": method, "kwargs": kwargs},
-            databases=[{"label": config["database_label"]}],
-        )
-
-        if config.get("expected_failure", False):
-            # Test that aggressive configurations fail gracefully
-            with pytest.raises(Exception) as exc_info:
-                extract_data_from_result(
-                    client, task, method
-                )  # Output not necessary when tasks have failed
-
-            # Verify specific error types (support both single error type and list of error types)
-            expected_errors = config.get("expected_error_type")
-            if expected_errors:
-                # Convert single error type to list for uniform handling
-                if not isinstance(expected_errors, list):
-                    expected_errors = [expected_errors]
-
-                # Check if the raised exception matches any of the expected types
-                error_matched = any(
-                    isinstance(exc_info.value, expected_error)
-                    for expected_error in expected_errors
-                )
-                assert error_matched, (
-                    f"Expected one of {[err.__name__ for err in expected_errors]} "
-                    f"but got {type(exc_info.value).__name__}"
-                )
-
-            print(f"Expected failure occurred for {config_name}: {exc_info.value}")
-        else:
-            # Normal success path
-            categorical_statistics, numerical_statistics = extract_data_from_result(
-                client, task, method
-            )
-            determine_statistics_acceptance(
-                {
-                    "categorical_general_statistics": categorical_statistics,
-                    "numerical_general_statistics": numerical_statistics,
-                },
-                {},
-                method,
-                config["database_label"],
-                kwargs,
-            ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
-
     @pytest.mark.parametrize("method", ["central", "partial_general_statistics"])
     @pytest.mark.parametrize(
         "config_name",
@@ -1001,7 +905,6 @@ def extract_data_from_result(client, task, method) -> Tuple[pd.DataFrame, pd.Dat
 
 def determine_statistics_acceptance(
     federated_result: Dict[str, Any],
-    central_result: Dict[str, Any],
     method: str,
     database_label: str,
     kwargs: Dict[str, Any],
@@ -1017,7 +920,6 @@ def determine_statistics_acceptance(
 
     Args:
         federated_result: Results from federated computation (DataFrames)
-        central_result: Results from central computation
         method: The method used for computation (e.g., "central", "partial_general_statistics")
         database_label: Label of the database/dataset file to validate against
         kwargs: Algorithm kwargs containing stratification and organization parameters

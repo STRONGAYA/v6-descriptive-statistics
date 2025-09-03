@@ -995,12 +995,9 @@ def determine_statistics_acceptance(
     # Determine organisation multiplier based on method and kwargs
     if method == "central":
         # Get organisation subset multiplier
-        organisation_multiplier = 3  # Default 3-node setup
-        organisation_ids = kwargs.get("organisation_ids", [1,2,3])
-        if organisation_ids:
-            # If specific organisations selected, adjust multiplier based on the fraction of total nodes
-            organisation_multiplier = 3 / len(organisation_ids)
-
+        organisation_ids = kwargs.get("organisation_ids", [1, 2, 3])
+        # If specific organisations selected, adjust multiplier based on the fraction of total nodes
+        organisation_multiplier = 3 / len(organisation_ids)
     elif method == "partial_general_statistics":
         # Data is distributed across 3 organisations in the test setup
         organisation_multiplier = 3
@@ -1046,7 +1043,7 @@ def determine_statistics_acceptance(
                 else:
                     # For variables without inlier filtering, allow some tolerance since algorithm may
                     # apply additional filtering. The count should at least not exceed the expected maximum
-                    max_expected = len(pd.read_csv(dataset_file)) * organisation_multiplier
+                    max_expected = len(pd.read_csv(dataset_file)) / organisation_multiplier
                     assert federated_count <= max_expected, (
                         f"Numerical count for {variable_name} exceeds maximum possible: "
                         f"got {federated_count}, max expected {max_expected}"
@@ -1054,7 +1051,7 @@ def determine_statistics_acceptance(
 
                 print(f"✓ Numerical count validation passed for {variable_name}: {federated_count}")
 
-    # Validate categorical statistics counts
+    # Validate categorical statistics counts and value distributions
     if not categorical_stats.empty:
         assert (
             len(categorical_stats.columns) == 3
@@ -1080,13 +1077,47 @@ def determine_statistics_acceptance(
                         f"got {total_var_count}, expected {expected_federated_count} "
                         f"(with inlier filtering applied, tolerance: {tolerance})"
                     )
+                    
+                    # Validate individual value counts for categorical variables
+                    if var_name in df.columns:
+                        expected_value_counts = df[var_name].value_counts() / organisation_multiplier
+                        
+                        for _, row in var_rows.iterrows():
+                            category_value = row.iloc[1]  # category value
+                            federated_count = float(row.iloc[2])  # count
+                            
+                            if category_value in expected_value_counts.index:
+                                expected_count = expected_value_counts[category_value]
+                                assert abs(federated_count - expected_count) <= tolerance, (
+                                    f"Categorical value count mismatch for {var_name}[{category_value}]: "
+                                    f"got {federated_count}, expected {expected_count} "
+                                    f"(tolerance: {tolerance})"
+                                )
+                                print(f"✓ Categorical value count validation passed for {var_name}[{category_value}]: {federated_count}")
+                        
                 else:
                     # For variables without inlier filtering, allow some tolerance
-                    max_expected = len(pd.read_csv(dataset_file)) * organisation_multiplier
+                    max_expected = len(pd.read_csv(dataset_file)) / organisation_multiplier
                     assert total_var_count <= max_expected, (
                         f"Categorical count for {var_name} exceeds maximum possible: "
                         f"got {total_var_count}, max expected {max_expected}"
                     )
+                    
+                    # Still validate value counts for variables without inlier filtering
+                    if var_name in df.columns:
+                        expected_value_counts = df[var_name].value_counts() / organisation_multiplier
+                        
+                        # Check that federated value counts don't exceed expected maximums
+                        for _, row in var_rows.iterrows():
+                            category_value = row.iloc[1]  # category value
+                            federated_count = float(row.iloc[2])  # count
+                            
+                            if category_value in expected_value_counts.index:
+                                max_expected_count = expected_value_counts[category_value] * 1.1  # 10% tolerance
+                                assert federated_count <= max_expected_count, (
+                                    f"Categorical value count for {var_name}[{category_value}] exceeds expected: "
+                                    f"got {federated_count}, max expected {max_expected_count}"
+                                )
 
                 print(f"✓ Categorical count validation passed for {var_name}: {total_var_count}")
 

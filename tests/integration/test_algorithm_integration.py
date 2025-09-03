@@ -992,26 +992,26 @@ def determine_statistics_acceptance(
     actual_count = len(df)
     print(f"Final filtered dataset count: {actual_count} (original: {original_count})")
 
-    # Determine organization multiplier based on method and kwargs
+    # Determine organisation multiplier based on method and kwargs
     if method == "central":
         # Get organisation subset multiplier
-        organisation_ids = kwargs.get("organisation_ids", [1, 2, 3])
+        organisation_multiplier = 3  # Default 3-node setup
+        organisation_ids = kwargs.get("organisation_ids", [1,2,3])
         if organisation_ids:
-            # If specific organisations selected, use the number of selected nodes
-            organization_multiplier = len(organisation_ids)
-        else:
-            # Default 3-node setup
-            organization_multiplier = 3
+            # If specific organisations selected, adjust multiplier based on the fraction of total nodes
+            organisation_multiplier = 3 / len(organisation_ids)
+
     elif method == "partial_general_statistics":
         # Data is distributed across 3 organisations in the test setup
-        organization_multiplier = 3
+        organisation_multiplier = 3
     else:
         raise ValueError(f"Unknown method: {method}")
 
-    # In federated setup, each node processes the same dataset, so total count = actual_count * organization_multiplier
-    expected_federated_count = actual_count * organization_multiplier
+    actual_count = len(df)
+    expected_federated_count = actual_count / organisation_multiplier
+
     print(f"Expected federated count: {expected_federated_count} "
-          f"(actual: {actual_count} × multiplier: {organization_multiplier})")
+          f"(actual: {actual_count} / multiplier: {organisation_multiplier})")
 
     # Extract statistics DataFrames
     numerical_stats = federated_result.get(
@@ -1046,7 +1046,7 @@ def determine_statistics_acceptance(
                 else:
                     # For variables without inlier filtering, allow some tolerance since algorithm may
                     # apply additional filtering. The count should at least not exceed the expected maximum
-                    max_expected = len(pd.read_csv(dataset_file)) * organization_multiplier
+                    max_expected = len(pd.read_csv(dataset_file)) * organisation_multiplier
                     assert federated_count <= max_expected, (
                         f"Numerical count for {variable_name} exceeds maximum possible: "
                         f"got {federated_count}, max expected {max_expected}"
@@ -1082,7 +1082,7 @@ def determine_statistics_acceptance(
                     )
                 else:
                     # For variables without inlier filtering, allow some tolerance
-                    max_expected = len(pd.read_csv(dataset_file)) * organization_multiplier
+                    max_expected = len(pd.read_csv(dataset_file)) * organisation_multiplier
                     assert total_var_count <= max_expected, (
                         f"Categorical count for {var_name} exceeds maximum possible: "
                         f"got {total_var_count}, max expected {max_expected}"

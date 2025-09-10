@@ -57,7 +57,7 @@ The algorithm does not produce a model and therefore reconstruction of the datas
 ⚠ Differencing
 ~~~~~~~~~~~~~~
 **Risk analysis**:
-This is indeed possible in case a data station manager were to change the dataset after performing a task, but data station managers should not be allowed to run tasks to prevent this. Scenarios in which users try to infer sensitive data by altering the selected data are currently not possible because the algorithm does not support filtering.
+This is indeed possible but is considered acceptable given a shared controllership agreement is in place.
 
 ✔ Deep Leakage from Gradients (DLG)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

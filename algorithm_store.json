@@ -1,132 +1,161 @@
 {
-  "image": "ghcr.io/strongaya/v6-descriptive-statistics:v1.0.2",
-  "code_url": "https://github.com/STRONGAYA/v6-descriptive-statistics",
+  "description": "Algorithm to retrieve descriptive statistics. For categorical data this include value, outlier, and missing values counts. For numerical data this includes minimum, maximum, counts (total number of values), missing value counts, outlier counts, deviation sum, sum, mean, and deviation.",
   "documentation_url": "https://github.com/STRONGAYA/v6-descriptive-statistics/wiki",
+  "image": null,
+  "name": "Descriptive Statistics",
+  "vantage6_version": "4.12.0",
+  "partitioning": "horizontal",
   "functions": [
     {
-      "standalone": true,
-      "arguments": [
-        {
-          "default_value": "",
-          "conditional_operator": null,
-          "type": "json",
-          "conditional_value": null,
-          "display_name": "Variables to Describe",
-          "description": "Dictionary of variables to describe. For categorical variables it should be structured as {variable_name: {datatype: categorical}}, and optionally as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} when wanting to investigate outliers. For numerical variables it should be structured as {variable: {datatype: numerical, inliers: (minimum range, maximum range)}} ",
-          "has_default_value": false,
-          "is_frontend_only": false,
-          "name": "variables_to_describe"
-        },
-        {
-          "default_value": "",
-          "conditional_operator": null,
-          "type": "json",
-          "conditional_value": null,
-          "display_name": "Variables to Stratify on",
-          "description": "Variables to stratify the data on - To be implemented",
-          "has_default_value": false,
-          "is_frontend_only": false,
-          "name": "variables_to_stratify"
-        },
-        {
-          "default_value": null,
-          "conditional_operator": null,
-          "type": "organization_list",
-          "conditional_value": null,
-          "display_name": "Organisation identifiers",
-          "description": "List of organisation IDs to include. Defaults to None, which will include all organisations.",
-          "has_default_value": true,
-          "is_frontend_only": false,
-          "name": "organization_ids"
-        },
-        {
-          "default_value": "false",
-          "conditional_operator": null,
-          "type": "boolean",
-          "conditional_value": null,
-          "display_name": "Return partials",
-          "description": "List of organisation IDs to include. Defaults to False",
-          "has_default_value": true,
-          "is_frontend_only": false,
-          "name": "return_partials"
-        }
-      ],
       "databases": [
         {
           "description": "Data to compute the summary statistics for",
           "name": "Database"
-        }
-      ],
-      "type": "central",
-      "display_name": "Aggregate statistics",
-      "ui_visualizations": [
-        {
-          "schema": {
-            "location": [
-              "categorical_descriptives"
-            ],
-            "columns": []
-          },
-          "type": "table",
-          "description": "A table providing the aggregate descriptive statistics for categorical data.",
-          "name": "Categorical descriptives"
-        },
-        {
-          "schema": {
-            "location": [
-              "numerical_descriptives"
-            ],
-            "columns": []
-          },
-          "type": "table",
-          "description": "A table providing the aggregate descriptive statistics for numerical data.",
-          "name": "Numerical descriptives"
         }
       ],
       "description": "Vantage6 algorithm that retrieves descriptive statistics",
-      "name": "central"
-    },
-    {
-      "standalone": true,
-      "arguments": [
+      "ui_visualizations": [
         {
-          "default_value": "",
-          "conditional_operator": null,
-          "type": "json",
-          "conditional_value": null,
-          "display_name": "Variables to describe",
-          "description": "Dictionary of variables to describe. For numerical variables it should be structured as {variable_name: {datatype: numerical/categorical}}, and optionally as {variable: {datatype: numerical, inliers: (minimum range, maximum range)}} when wanting to investigate outliers. For categorical variables it should be structured as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} ",
-          "has_default_value": false,
-          "is_frontend_only": false,
-          "name": "variables_to_describe"
+          "description": "A table providing the aggregate descriptive statistics for categorical data.",
+          "schema": {
+            "location": ["general_statistics",
+              "categorical_general_statistics"
+            ],
+            "columns": []
+          },
+          "name": "Categorical descriptives",
+          "type": "table"
         },
         {
-          "default_value": "",
-          "conditional_operator": null,
-          "type": "json",
-          "conditional_value": null,
-          "display_name": "Variables to stratify on",
-          "description": "To be implemented",
-          "has_default_value": false,
-          "is_frontend_only": false,
-          "name": "variables_to_stratify"
+          "description": "A table providing the aggregate descriptive statistics for numerical data.",
+          "schema": {
+            "location": ["general_statistics",
+              "numerical_general_statistics"
+            ],
+            "columns": []
+          },
+          "name": "Numerical descriptives",
+          "type": "table"
         }
       ],
+      "name": "central",
+      "display_name": "Aggregate statistics",
+      "type": "central",
+      "arguments": [
+        {
+          "description": "Dictionary of variables to describe. For categorical variables it should be structured as {variable_name: {datatype: categorical}}, and optionally as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} when wanting to investigate outliers. For numerical variables it should be structured as {variable: {datatype: numerical, inliers: (minimum range, maximum range)}} ",
+          "has_default_value": false,
+          "name": "variables_to_describe",
+          "conditional_value": null,
+          "default_value": "",
+          "is_frontend_only": false,
+          "type": "json",
+          "allowed_values": [],
+          "display_name": "Variables to Describe",
+          "conditional_operator": null
+        },
+        {
+          "description": "Variables to stratify the data on - To be implemented",
+          "has_default_value": false,
+          "name": "variables_to_stratify",
+          "conditional_value": null,
+          "default_value": "",
+          "is_frontend_only": false,
+          "type": "json",
+          "allowed_values": [],
+          "display_name": "Variables to Stratify on",
+          "conditional_operator": null
+        },
+        {
+          "description": "List of organisation IDs to include. Defaults to None, which will include all organisations.",
+          "has_default_value": true,
+          "name": "organization_ids",
+          "conditional_value": null,
+          "default_value": null,
+          "is_frontend_only": false,
+          "type": "organization_list",
+          "allowed_values": [],
+          "display_name": "Organisation identifiers",
+          "conditional_operator": null
+        },
+        {
+          "description": "List of organisation IDs to include. Defaults to False",
+          "has_default_value": true,
+          "name": "return_partials",
+          "conditional_value": null,
+          "default_value": "false",
+          "is_frontend_only": false,
+          "type": "boolean",
+          "allowed_values": [],
+          "display_name": "Return partials",
+          "conditional_operator": null
+        }
+      ],
+      "standalone": true
+    },
+    {
       "databases": [
         {
           "description": "Data to compute the summary statistics for",
           "name": "Database"
         }
       ],
-      "type": "federated",
-      "display_name": "Partial statistics",
-      "ui_visualizations": [],
       "description": "Partial algorithm that retrieves descriptive statistics",
-      "name": "partial"
+            "ui_visualizations": [
+        {
+          "description": "A table providing the aggregate descriptive statistics for categorical data.",
+          "schema": {
+            "location": ["general_statistics",
+              "categorical_general_partial_statistics"
+            ],
+            "columns": []
+          },
+          "name": "Categorical descriptives",
+          "type": "table"
+        },
+        {
+          "description": "A table providing the aggregate descriptive statistics for numerical data.",
+          "schema": {
+            "location": ["general_statistics",
+              "numerical_general_partial_statistics"
+            ],
+            "columns": []
+          },
+          "name": "Numerical descriptives",
+          "type": "table"
+        }
+      ],
+      "name": "partial_general_statistics",
+      "display_name": "Partial statistics",
+      "type": "federated",
+      "arguments": [
+        {
+          "description": "Dictionary of variables to describe. For numerical variables it should be structured as {variable_name: {datatype: numerical/categorical}}, and optionally as {variable: {datatype: numerical, inliers: (minimum range, maximum range)}} when wanting to investigate outliers. For categorical variables it should be structured as {variable: {datatype: categorical, inliers: (acceptable value 1, acceptable value 2, acceptable value 3, et cetera)}} ",
+          "has_default_value": false,
+          "name": "variables_to_describe",
+          "conditional_value": null,
+          "default_value": "",
+          "is_frontend_only": false,
+          "type": "json",
+          "allowed_values": [],
+          "display_name": "Variables to describe",
+          "conditional_operator": null
+        },
+        {
+          "description": "To be implemented",
+          "has_default_value": false,
+          "name": "variables_to_stratify",
+          "conditional_value": null,
+          "default_value": "",
+          "is_frontend_only": false,
+          "type": "json",
+          "allowed_values": [],
+          "display_name": "Variables to stratify on",
+          "conditional_operator": null
+        }
+      ],
+      "standalone": true
     }
   ],
-  "partitioning": "horizontal",
-  "vantage6_version": "4.7.0",
-  "description": "Algorithm to retrieve descriptive statistics. For categorical data this include value, outlier, and missing values counts. For numerical data this includes minimum, maximum, counts (total number of values), missing value counts, outlier counts, deviation sum, sum, mean, and deviation.",
-  "name": "Descriptive Statistics"
+  "code_url": "https://github.com/STRONGAYA/v6-descriptive-statistics"
 }

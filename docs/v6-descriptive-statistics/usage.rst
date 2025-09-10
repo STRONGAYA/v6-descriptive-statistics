@@ -21,8 +21,6 @@ framework. If you are not, please read the `documentation <https://docs.vantage6
 first, especially the part about the
 `Python client <https://docs.vantage6.ai/en/main/user/pyclient.html>`_.
 
-.. TODO Some explanation of the code below
-
 .. code-block:: python
 
   from vantage6.client import Client
@@ -31,7 +29,7 @@ first, especially the part about the
   port = 5000
   api_path = '/api'
   private_key = None
-  username = 'org_1-admin'
+  username = 'dev_admin'
   password = 'password'
 
   # Create connection with the vantage6 server
@@ -48,8 +46,13 @@ first, especially the part about the
                                              'inliers': ('M', 'F', 'X')},
                                       "Age": {"datatype": "numerical",
                                               "inliers": (15, 39)}}},
-        'variables_to_stratify': None,
-        'organization_ids': ['1', '2', '3']
+        'variables_to_stratify': {"Integer variable": {"start": 10, "datatype": "int"},
+                                    "Categorical variable": {
+                                        "values": ["Category 1", "Category 3"],
+                                        "datatype": "categorical",
+                                        }
+                                    },
+        'organization_ids': [1, 2, 3]
     },
     'output_format': 'json'
   }
@@ -59,7 +62,7 @@ first, especially the part about the
       organizations=[1],
       name='v6-descriptive-statistics',
       description='Vantage6 algorithm that retrieves descriptive statistics ',
-      image='medicaldataworks.azurecr.io/projects/strongaya/v6-descriptive-statistics',
+      image='ghcr.io/strongaya/v6-descriptive-statistics:latest',
       input=input_,
       data_format='json'
   )

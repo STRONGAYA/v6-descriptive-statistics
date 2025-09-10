@@ -811,7 +811,15 @@ class TestAlgorithmComponent:
 
 
 def extract_data_from_result(client, task, method) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    # TODO: Add proper docstring
+    """
+    Extract categorical and numerical statistics from the algorithm task result.
+    Handles error checking and raises appropriate exceptions based on log content.
+
+    :param client: Authenticated Vantage6 client
+    :param task: Task object returned from task creation
+    :param method: The method used for computation (e.g. "central", "partial_general_statistics")
+    :return: Tuple of DataFrames (categorical_stats, numerical_stats)
+    """
     # Wait for results to be ready
     print("Waiting for results")
     task_id = task["id"]

@@ -148,7 +148,11 @@ def test_configurations():
                 },
                 "Social Structure": {
                     "datatype": "categorical",
-                    "inliers": ["Colony", "Solitary", "Swarm"],  # Use actual values from Europa dataset
+                    "inliers": [
+                        "Colony",
+                        "Solitary",
+                        "Swarm",
+                    ],  # Use actual values from Europa dataset
                 },
             },
             "variables_to_stratify": {
@@ -960,7 +964,6 @@ def determine_statistics_acceptance(
 
     # Read the actual test dataset
     df = pd.read_csv(dataset_file)
-    original_count = len(df)
 
     # Apply data stratification if specified in kwargs (this applies globally)
     variables_to_stratify = kwargs.get("variables_to_stratify")
@@ -972,17 +975,23 @@ def determine_statistics_acceptance(
                     values = var_config.get("values", [])
                     if values:
                         df = df[df[var_name].isin(values)]
-                        print(f"Applied categorical stratification on {var_name}: {values}, remaining rows: {len(df)}")
+                        print(
+                            f"Applied categorical stratification on {var_name}: {values}, remaining rows: {len(df)}"
+                        )
                 elif var_config.get("datatype") == "int":
                     # Apply numerical range stratification
                     start = var_config.get("start")
                     end = var_config.get("end")
                     if start is not None:
                         df = df[df[var_name] >= start]
-                        print(f"Applied start filter on {var_name} >= {start}, remaining rows: {len(df)}")
+                        print(
+                            f"Applied start filter on {var_name} >= {start}, remaining rows: {len(df)}"
+                        )
                     if end is not None:
                         df = df[df[var_name] <= end]
-                        print(f"Applied end filter on {var_name} <= {end}, remaining rows: {len(df)}")
+                        print(
+                            f"Applied end filter on {var_name} <= {end}, remaining rows: {len(df)}"
+                        )
 
     # Store the stratified dataframe (without inlier filters)
     stratified_df = df.copy()
@@ -1030,30 +1039,48 @@ def determine_statistics_acceptance(
                 variable_df = stratified_df.copy()
                 variable_config = variables_to_describe.get(variable_name, {})
 
-                if "inliers" in variable_config and variable_config.get("datatype") == "numerical":
+                if (
+                    "inliers" in variable_config
+                    and variable_config.get("datatype") == "numerical"
+                ):
                     inliers = variable_config["inliers"]
                     if isinstance(inliers, (tuple, list)) and len(inliers) == 2:
-                        variable_df = variable_df[(variable_df[variable_name] >= inliers[0]) & (variable_df[variable_name] <= inliers[1])]
-                        print(f"Applied numerical inlier filter on {variable_name}: {inliers}, remaining rows: {len(variable_df)}")
+                        variable_df = variable_df[
+                            (variable_df[variable_name] >= inliers[0])
+                            & (variable_df[variable_name] <= inliers[1])
+                        ]
+                        print(
+                            f"Applied numerical inlier filter on {variable_name}: {inliers}, "
+                            f"remaining rows: {len(variable_df)}"
+                        )
 
                 actual_count = len(variable_df)
                 expected_federated_count = int(actual_count / organisation_multiplier)
 
-                print(f"Expected federated count for {variable_name}: {expected_federated_count} "
-                      f"(actual: {actual_count} / multiplier: {organisation_multiplier})")
+                print(
+                    f"Expected federated count for {variable_name}: {expected_federated_count} "
+                    f"(actual: {actual_count} / multiplier: {organisation_multiplier})"
+                )
 
                 # Check if this variable was filtered by inliers
-                if "inliers" in variable_config and variable_config.get("datatype") == "numerical":
+                if (
+                    "inliers" in variable_config
+                    and variable_config.get("datatype") == "numerical"
+                ):
                     # For numerical variables with inliers, the count should match our filtered dataset
                     if method == "partial_general_statistics":
                         # Use relaxed validation for distributed data scenarios
-                        max_reasonable_count = expected_federated_count * 1.5  # Allow 50% tolerance
+                        max_reasonable_count = (
+                            expected_federated_count * 1.5
+                        )  # Allow 50% tolerance
                         assert federated_count <= max_reasonable_count, (
                             f"Numerical count for {variable_name} exceeds reasonable bounds: "
                             f"got {federated_count}, max reasonable {max_reasonable_count}"
                         )
                     else:
-                        assert abs(federated_count - expected_federated_count) <= tolerance, (
+                        assert (
+                            abs(federated_count - expected_federated_count) <= tolerance
+                        ), (
                             f"Numerical count mismatch for {variable_name}: "
                             f"got {federated_count}, expected {expected_federated_count} "
                             f"(with inlier filtering applied, tolerance: {tolerance})"
@@ -1068,7 +1095,9 @@ def determine_statistics_acceptance(
                         f"got {federated_count}, max expected {max_expected}"
                     )
 
-                print(f"✓ Numerical count validation passed for {variable_name}: {federated_count}")
+                print(
+                    f"✓ Numerical count validation passed for {variable_name}: {federated_count}"
+                )
 
     # Validate categorical statistics counts and value distributions
     if not categorical_stats.empty:
@@ -1091,22 +1120,35 @@ def determine_statistics_acceptance(
                 variable_df = stratified_df.copy()
                 variable_config = variables_to_describe.get(var_name, {})
 
-                if "inliers" in variable_config and variable_config.get("datatype") == "categorical":
+                if (
+                    "inliers" in variable_config
+                    and variable_config.get("datatype") == "categorical"
+                ):
                     inliers = variable_config["inliers"]
                     if isinstance(inliers, (tuple, list)):
                         variable_df = variable_df[variable_df[var_name].isin(inliers)]
-                        print(f"Applied categorical inlier filter on {var_name}: {inliers}, remaining rows: {len(variable_df)}")
+                        print(
+                            f"Applied categorical inlier filter on {var_name}: {inliers}, "
+                            f"remaining rows: {len(variable_df)}"
+                        )
 
                 actual_count = len(variable_df)
                 expected_federated_count = int(actual_count / organisation_multiplier)
 
-                print(f"Expected federated count for {var_name}: {expected_federated_count} "
-                      f"(actual: {actual_count} / multiplier: {organisation_multiplier})")
+                print(
+                    f"Expected federated count for {var_name}: {expected_federated_count} "
+                    f"(actual: {actual_count} / multiplier: {organisation_multiplier})"
+                )
 
                 # Check if this variable was filtered by inliers
-                if "inliers" in variable_config and variable_config.get("datatype") == "categorical":
+                if (
+                    "inliers" in variable_config
+                    and variable_config.get("datatype") == "categorical"
+                ):
                     # For categorical variables with inliers, count should match filtered dataset
-                    assert abs(total_var_count - expected_federated_count) <= tolerance, (
+                    assert (
+                        abs(total_var_count - expected_federated_count) <= tolerance
+                    ), (
                         f"Categorical count mismatch for {var_name}: "
                         f"got {total_var_count}, expected {expected_federated_count} "
                         f"(with inlier filtering applied, tolerance: {tolerance})"
@@ -1126,18 +1168,27 @@ def determine_statistics_acceptance(
                                 # due to data distribution ambiguity across federated nodes
                                 if method == "partial_general_statistics":
                                     # Use relaxed validation for distributed data scenarios
-                                    max_reasonable_count = expected_count * 1.5  # Allow 50% tolerance
+                                    max_reasonable_count = (
+                                        expected_count * 1.5
+                                    )  # Allow 50% tolerance
                                     assert federated_count <= max_reasonable_count, (
-                                        f"Categorical value count for {var_name}[{category_value}] exceeds reasonable bounds: "
+                                        f"Categorical value count for {var_name}[{category_value}] "
+                                        f"exceeds reasonable bounds: "
                                         f"got {federated_count}, max reasonable {max_reasonable_count}"
                                     )
                                 else:
-                                    assert abs(federated_count - expected_count) <= tolerance, (
+                                    assert (
+                                        abs(federated_count - expected_count)
+                                        <= tolerance
+                                    ), (
                                         f"Categorical value count mismatch for {var_name}[{category_value}]: "
                                         f"got {federated_count}, expected {expected_count} "
                                         f"(tolerance: {tolerance})"
                                     )
-                                print(f"✓ Categorical value count validation passed for {var_name}[{category_value}]: {federated_count}")
+                                print(
+                                    f"✓ Categorical value count validation passed for {var_name}[{category_value}]: "
+                                    f"{federated_count}"
+                                )
 
                 else:
                     # For variables without inlier filtering, allow some tolerance since algorithm may
@@ -1147,7 +1198,7 @@ def determine_statistics_acceptance(
                         f"Categorical count for {var_name} exceeds maximum possible: "
                         f"got {total_var_count}, max expected {max_expected}"
                     )
-                    
+
                     # Still validate value counts for variables without inlier filtering
                     if var_name in variable_df.columns:
                         expected_value_counts = variable_df[var_name].value_counts()
@@ -1158,12 +1209,16 @@ def determine_statistics_acceptance(
                             federated_count = float(row.iloc[2])  # count
 
                             if category_value in expected_value_counts.index:
-                                max_expected_count = expected_value_counts[category_value] * 1.1  # 10% tolerance
+                                max_expected_count = (
+                                    expected_value_counts[category_value] * 1.1
+                                )  # 10% tolerance
                                 assert federated_count <= max_expected_count, (
                                     f"Categorical value count for {var_name}[{category_value}] exceeds expected: "
                                     f"got {federated_count}, max expected {max_expected_count}"
                                 )
 
-                print(f"✓ Categorical count validation passed for {var_name}: {total_var_count}")
+                print(
+                    f"✓ Categorical count validation passed for {var_name}: {total_var_count}"
+                )
 
     print("✓ All count validations passed")

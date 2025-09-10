@@ -9,6 +9,7 @@ from .partial import (
 
 from .miscellaneous import (
     check_input_structure,
+    check_and_enforce_sample_size_threshold,
 )
 
 __all__ = [
@@ -16,6 +17,7 @@ __all__ = [
     "partial_general_statistics",
     "partial_aggregate_adjusted_deviation",
     "check_input_structure",
+    "check_and_enforce_sample_size_threshold",
 ]
 
 # Package information

@@ -1,7 +1,7 @@
 # v6-descriptive-statistics
 
 <p align="center">
-<a href="https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/"><img alt="Test status" src="https://github.com/STRONGAYA/v6-descriptive-statistics/workflows/Test%20Suite/badge.svg)"></a>
+<a href="https://github.com/STRONGAYA/v6-descriptive-statistics/actions/workflows/test-suite.yml"> <img alt="Test status" src="https://github.com/STRONGAYA/v6-descriptive-statistics/actions/workflows/test-suite.yml/badge.svg"></a>
 <a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10+-blue.svg"></a>
 <a href="https://opensource.org/licenses/Apache-2.0"><img alt="Licence: Apache 2.0" src="https://img.shields.io/badge/Licence-Apache%202.0-blue.svg"></a>
 <br>

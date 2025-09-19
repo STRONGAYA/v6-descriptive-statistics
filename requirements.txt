@@ -3,4 +3,4 @@ pandas
 requests
 
 git+https://github.com/STRONGAYA/v6-tools-general.git@v1.0.2
-git+https://github.com/STRONGAYA/v6-tools-rdf.git@v0.1.4
+git+https://github.com/STRONGAYA/v6-tools-rdf.git@v1.0.0

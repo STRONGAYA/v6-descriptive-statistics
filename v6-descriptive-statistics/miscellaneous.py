@@ -2,7 +2,6 @@ import pandas as pd
 
 from io import StringIO
 from typing import Dict, Union, List, TypedDict
-from vantage6.algorithm.tools.exceptions import PrivacyThresholdViolation
 from vantage6.algorithm.tools.util import get_env_var
 
 from vantage6_strongaya_general.miscellaneous import safe_log
@@ -199,7 +198,9 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
     if privacy_violations:
         safe_log(
             "warning",
-            "Privacy threshold violations detected. Statistical results have been adjusted by removing variables/categories that don't meet the sample size threshold."
+            "Privacy threshold violations detected. "
+            "Statistical results have been adjusted by removing variables/categories "
+            "that don't meet the sample size threshold.",
         )
 
     return filtered_result

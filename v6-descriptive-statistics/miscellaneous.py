@@ -84,16 +84,13 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
 def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str, str]:
     """
     Check if all counts in the statistics result meet the sample size threshold.
-    Remove statistics that don't meet the threshold and raise privacy violations.
+    Remove statistics that don't meet the threshold.
 
     Args:
         result (Dict[str, str]): Dictionary containing statistical results with JSON strings
 
     Returns:
         Dict[str, str]: Filtered result with only statistics meeting the threshold
-
-    Raises:
-        PrivacyThresholdViolation: If privacy threshold violations are detected
     """
     # Retrieve the sample size threshold
     sample_size_threshold = get_env_var("SAMPLE_SIZE_THRESHOLD")
@@ -198,10 +195,11 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
         ]:
             filtered_result[key] = value
 
-    # Raise privacy violation if any were detected
+    # Log warning if any adjustments were made due to privacy violations
     if privacy_violations:
-        raise PrivacyThresholdViolation(
-            "Privacy threshold violation detected in statistical results."
+        safe_log(
+            "warning",
+            "Privacy threshold violations detected. Statistical results have been adjusted by removing variables/categories that don't meet the sample size threshold."
         )
 
     return filtered_result

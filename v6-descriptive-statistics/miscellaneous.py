@@ -2,6 +2,7 @@ import pandas as pd
 
 from io import StringIO
 from typing import Dict, Union, List, TypedDict
+from vantage6.algorithm.tools.exceptions import PrivacyThresholdViolation
 from vantage6.algorithm.tools.util import get_env_var
 
 from vantage6_strongaya_general.miscellaneous import safe_log
@@ -83,13 +84,16 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
 def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str, str]:
     """
     Check if all counts in the statistics result meet the sample size threshold.
-    Remove statistics that don't meet the threshold.
+    Remove statistics that don't meet the threshold and raise privacy violations only if no results remain.
 
     Args:
         result (Dict[str, str]): Dictionary containing statistical results with JSON strings
 
     Returns:
         Dict[str, str]: Filtered result with only statistics meeting the threshold
+
+    Raises:
+        PrivacyThresholdViolation: If privacy threshold violations result in no remaining statistics
     """
     # Retrieve the sample size threshold
     sample_size_threshold = get_env_var("SAMPLE_SIZE_THRESHOLD")
@@ -133,7 +137,7 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
 
                 if valid_data_rows.empty and not data_rows.empty:
                     # No valid categories left for this variable (excluding na/outliers)
-                    privacy_violations.append("categorical_violation")
+                    privacy_violations.append(f"categorical_violation_{variable_name}")
                     continue  # Skip this variable entirely
 
                 # Keep valid data rows and all metadata rows (na/outliers are always allowed)
@@ -171,7 +175,9 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
 
                     if count_value < sample_size_threshold:
                         # Count doesn't meet threshold - remove all statistics for this variable
-                        privacy_violations.append("numerical_violation")
+                        privacy_violations.append(
+                            f"numerical_violation_{variable_name}"
+                        )
                         continue  # Skip this variable entirely
 
                 # Variable meets threshold - keep all its statistics
@@ -194,13 +200,28 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
         ]:
             filtered_result[key] = value
 
-    # Log warning if any adjustments were made due to privacy violations
+    # Check if any statistical results remain
+    has_statistical_results = any(
+        key in filtered_result
+        for key in [
+            "categorical_general_partial_statistics",
+            "numerical_general_partial_statistics",
+        ]
+    )
+
+    # Handle privacy violations
     if privacy_violations:
-        safe_log(
-            "warning",
-            "Privacy threshold violations detected. "
-            "Statistical results have been adjusted by removing variables/categories "
-            "that don't meet the sample size threshold.",
-        )
+        if has_statistical_results:
+            # Some results remain - just log a warning
+            safe_log(
+                "warning",
+                "Privacy threshold violations detected for some variables, "
+                "results were adjusted and insufficient counts were set to nan.",
+            )
+        else:
+            # No statistical results remain - raise exception
+            raise PrivacyThresholdViolation(
+                "Privacy threshold violation detected in all statistical results - no data can be returned."
+            )
 
     return filtered_result

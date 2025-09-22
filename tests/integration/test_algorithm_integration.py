@@ -199,7 +199,7 @@ def test_configurations():
             "database_label": "creatures_of_enceladus",
             # Enceladus is a moon of Saturn with a subsurface ocean
             "variables_to_describe_basic": {
-                "Temperature Tolerance (K)": {"datatype": "numerical"},
+                "Temperature Tolerance (C)": {"datatype": "numerical"},
                 "NonExistentVariable": {  # Use non-existent variable to trigger error
                     "datatype": "categorical"
                 },
@@ -207,7 +207,7 @@ def test_configurations():
             "organisation_subset": [4, 5],
             # Non-existent organisations to test input validation
             "variables_to_describe_inlier_specific": {
-                "Temperature Tolerance (K)": {
+                "Temperature Tolerance (C)": {
                     "datatype": "numerical",
                     "inliers": [50, 150],
                 },

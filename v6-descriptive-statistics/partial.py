@@ -3,6 +3,7 @@ import pandas as pd
 from typing import Dict
 from vantage6.algorithm.tools.decorators import algorithm_client, data
 from vantage6.algorithm.client import AlgorithmClient
+from vantage6.algorithm.tools.exceptions import UserInputError
 
 # General federated algorithm functions
 from vantage6_strongaya_general.general_statistics import (
@@ -11,7 +12,6 @@ from vantage6_strongaya_general.general_statistics import (
 )
 from vantage6_strongaya_general.miscellaneous import (
     apply_data_stratification,
-    check_variable_availability,
     set_datatypes,
     safe_log,
     VariableDetails,
@@ -79,13 +79,11 @@ def partial_general_statistics(
 
     # Add the variables to stratify details to the variables to analyse details
     if variables_to_stratify is not None:
-        variables_to_describe = variables_to_describe | variables_to_stratify
-
-    # Ensure all variables that were specified are present
-    check_variable_availability(df, variables_to_analyse)
-
-    # Set datatypes for each variable
-    df = set_datatypes(df, variables_to_describe)
+        # Set datatypes for each variable
+        df = set_datatypes(df, variables_to_describe | variables_to_stratify)
+    else:
+        # Set datatypes for the variables to be described
+        df = set_datatypes(df, variables_to_describe)
 
     # Reformat the variables_to_stratify to the expected format after datatypes have been set
     if variables_to_stratify is not None:
@@ -100,6 +98,12 @@ def partial_general_statistics(
 
     # Apply stratification if necessary
     df = apply_data_stratification(df, variables_to_stratify)
+
+    # Ensure that any of the variables to describe are present
+    if not any(variable in df.columns for variable in variables_to_describe):
+        raise UserInputError(
+            "None of the variables to describe are present in the data."
+        )
 
     # Ensure that the sample size threshold is met
     df = apply_sample_size_threshold(client, df, variables_to_analyse)
@@ -169,13 +173,11 @@ def partial_aggregate_adjusted_deviation(
 
     # Add the variables to stratify details to the variables to analyse details
     if variables_to_stratify is not None:
-        variables_to_describe = variables_to_describe | variables_to_stratify
-
-    # Ensure all variables that were specified are present
-    check_variable_availability(df, variables_to_analyse)
-
-    # Set datatypes for each variable
-    df = set_datatypes(df, variables_to_describe)
+        # Set datatypes for each variable
+        df = set_datatypes(df, variables_to_describe | variables_to_stratify)
+    else:
+        # Set datatypes for the variables to be described
+        df = set_datatypes(df, variables_to_describe)
 
     # Reformat the variables_to_stratify to the expected format after datatypes have been set
     if variables_to_stratify is not None:
@@ -190,6 +192,12 @@ def partial_aggregate_adjusted_deviation(
 
     # Apply stratification if necessary
     df = apply_data_stratification(df, variables_to_stratify)
+
+    # Ensure that any of the variables to describe are present
+    if not any(variable in df.columns for variable in variables_to_describe):
+        raise UserInputError(
+            "None of the variables to describe are present in the data."
+        )
 
     # Ensure that the sample size threshold is met
     df = apply_sample_size_threshold(client, df, variables_to_analyse)

@@ -140,7 +140,7 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
                     privacy_violations.append(f"categorical_violation_{variable_name}")
                     continue  # Skip this variable entirely
 
-                # Keep valid data rows and all metadata rows (na/outliers are always allowed)
+                # Keep valid data rows and all metadata rows (nan/outliers are always allowed)
                 valid_rows = pd.concat(
                     [valid_data_rows, metadata_rows], ignore_index=True
                 )
@@ -200,14 +200,30 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
         ]:
             filtered_result[key] = value
 
-    # Check if any statistical results remain
-    has_statistical_results = any(
-        key in filtered_result
-        for key in [
-            "categorical_general_partial_statistics",
-            "numerical_general_partial_statistics",
-        ]
-    )
+    # Check if any statistical results remain - only pass if all original result types still have valid data
+    has_categorical_data = False
+    has_numerical_data = False
+
+    # Check what was originally present
+    original_had_categorical = "categorical_general_partial_statistics" in result
+    original_had_numerical = "numerical_general_partial_statistics" in result
+
+    # For categorical, check if there's actual data beyond nan/outliers
+    if "categorical_general_partial_statistics" in filtered_result:
+        categorical_json = filtered_result["categorical_general_partial_statistics"]
+        categorical_df = pd.read_json(StringIO(categorical_json))
+
+        # Check if there are any rows that are not nan or outliers
+        data_rows = categorical_df[~categorical_df["value"].isin(["nan", "outliers"])]
+        has_categorical_data = not data_rows.empty
+
+    # Check numerical data
+    has_numerical_data = "numerical_general_partial_statistics" in filtered_result
+
+    # Only pass if all originally present data types still have valid results
+    has_statistical_results = (
+        not original_had_categorical or has_categorical_data
+    ) and (not original_had_numerical or has_numerical_data)
 
     # Handle privacy violations
     if privacy_violations:

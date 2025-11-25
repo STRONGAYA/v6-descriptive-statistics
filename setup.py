@@ -10,7 +10,7 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 # Here you specify the meta-data of your package. The `name` argument is needed in some other steps.
 setup(
     name="v6-descriptive-statistics",
-    version="2.0.0",
+    version="2.0.1",
     description="Vantage6 algorithm that retrieves descriptive statistics ",
     long_description=long_description,
     long_description_content_type="text/markdown",

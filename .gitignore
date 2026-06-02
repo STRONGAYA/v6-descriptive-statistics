@@ -106,6 +106,7 @@ test_env/
 # mypy
 .mypy_cache/
 
+.idea
 .vscode/
 
 # Security reports

@@ -166,15 +166,17 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
                 # Find the count row for this variable
                 count_row = variable_rows[variable_rows["statistic"] == "count"]
 
-                if not count_row.empty:
-                    count_value = count_row.iloc[0]["value"]
+                if count_row.empty:
+                    # No count row found - treat as privacy violation
+                    privacy_violations.append(f"numerical_violation_{variable_name}")
+                    continue  # Skip this variable entirely
 
-                    if count_value < sample_size_threshold:
-                        # Count doesn't meet threshold - remove all statistics for this variable
-                        privacy_violations.append(
-                            f"numerical_violation_{variable_name}"
-                        )
-                        continue  # Skip this variable entirely
+                count_value = count_row.iloc[0]["value"]
+
+                if count_value < sample_size_threshold:
+                    # Count doesn't meet threshold - remove all statistics for this variable
+                    privacy_violations.append(f"numerical_violation_{variable_name}")
+                    continue  # Skip this variable entirely
 
                 # Variable meets threshold - keep all its statistics
                 valid_numerical_rows.append(variable_rows)

@@ -190,14 +190,6 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
                     combined_numerical_df.to_json()
                 )
 
-    # Copy any other results that don't need threshold checking
-    for key, value in result.items():
-        if key not in [
-            "categorical_general_partial_statistics",
-            "numerical_general_partial_statistics",
-        ]:
-            filtered_result[key] = value
-
     # Check if any statistical results remain - only pass if all original result types still have valid data
     has_categorical_data = False
     has_numerical_data = False

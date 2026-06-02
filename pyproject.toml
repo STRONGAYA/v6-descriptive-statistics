@@ -42,9 +42,6 @@ dev = [
     "pytest-mock>=3.10.0",
     "docker>=6.0.0",
     "numpy>=2.0.0",
-    "black",
-    "flake8",
-    "mypy"
 ]
 docs = [
     "sphinx>=5.0.0",
@@ -55,6 +52,11 @@ test-ci = [
     "pytest-mock>=3.10.0",
     "docker>=6.0.0",
     "numpy>=2.0.0",
+]
+lint = [
+    "flake8",
+    "black",
+    "mypy",
 ]
 
 [project.urls]

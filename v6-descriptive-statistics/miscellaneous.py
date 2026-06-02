@@ -210,10 +210,8 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
     # Check numerical data
     has_numerical_data = "numerical_general_partial_statistics" in filtered_result
 
-    # Only pass if all originally present data types still have valid results
-    has_statistical_results = (
-        not original_had_categorical or has_categorical_data
-    ) and (not original_had_numerical or has_numerical_data)
+    # Pass if any statistical results remain
+    has_statistical_results = has_categorical_data or has_numerical_data
 
     # Handle privacy violations
     if privacy_violations:

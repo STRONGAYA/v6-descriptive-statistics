@@ -106,9 +106,9 @@ def central(
     input_ = {
         "method": "partial_aggregate_adjusted_deviation",
         "kwargs": {
-            "numerical_aggregated_results": results_general_statistics[
-                "numerical_general_statistics"
-            ],
+            "numerical_aggregated_results": results_general_statistics.get(
+                "numerical_general_statistics", {}
+            ),
             "variables_to_describe": variables_to_describe,
             "variables_to_stratify": variables_to_stratify,
         },

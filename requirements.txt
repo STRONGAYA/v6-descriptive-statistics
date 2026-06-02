@@ -1,6 +1,0 @@
-vantage6-algorithm-tools==4.15.1
-pandas
-requests
-
-git+https://github.com/STRONGAYA/v6-tools-general.git@v1.0.3
-git+https://github.com/STRONGAYA/v6-tools-rdf.git@v1.0.1

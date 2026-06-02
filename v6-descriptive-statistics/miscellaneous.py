@@ -96,11 +96,7 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
         PrivacyThresholdViolation: If privacy threshold violations result in no remaining statistics
     """
     # Retrieve the sample size threshold
-    sample_size_threshold = get_env_var("SAMPLE_SIZE_THRESHOLD")
-    try:
-        sample_size_threshold = int(sample_size_threshold)
-    except TypeError:
-        sample_size_threshold = 10
+    sample_size_threshold = get_env_var("SAMPLE_SIZE_THRESHOLD", default=10, as_type="int")
 
     safe_log(
         "info",

@@ -37,6 +37,10 @@ The statistics that are computed include:
 - Percentiles/Quantiles (set to 25th, 50th, and 75th percentile by default)
 - Frequency counts for categorical variables
 
+For usage, we recommend that within your collaboration, every node should configure the `SAMPLE_SIZE_THRESHOLD` 
+environment variable to a value that is you have reached a consensus on.
+If not specified, the default value is that the working dataframe should at least contain 10 records.
+
 A more detailed description of the algorithm and how to use it can be found in the algorithm's
 [Wiki](https://github.com/STRONGAYA/v6-descriptive-statistics/wiki) and the `/docs` directory.
 

@@ -1,19 +1,19 @@
 # Basic python3 image as base
-FROM harbor2.vantage6.ai/infrastructure/algorithm-base:4.11
+FROM python:alpine3.10
 
 # This is a placeholder that should be overloaded by invoking docker build with '--build-arg PKG_NAME=...'
 ARG PKG_NAME="v6-descriptive-statistics"
 
-# Install git and other dependencies
-RUN apt-get update && apt-get install -y git && apt-get clean
+# Install system dependencies (Alpine uses apk)
+RUN apk add --no-cache git
 
 # Install federated algorithm
 COPY . /app
-RUN pip install /app
+WORKDIR /app
+RUN pip install --no-cache-dir /app
 
 # Set environment variable to make name of the package available within the docker image.
 ENV PKG_NAME=${PKG_NAME}
 
 # Tell docker to execute `wrap_algorithm()` when the image is run.
-# This function will ensure that the algorithm method is called properly.
 CMD ["python", "-c", "from vantage6.algorithm.tools.wrap import wrap_algorithm; wrap_algorithm()"]

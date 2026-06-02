@@ -48,3 +48,4 @@ Dockerfile
 
 # Vantage6
 algorithm_store.json
+.copier-answers.yml

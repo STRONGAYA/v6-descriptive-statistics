@@ -96,7 +96,9 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
         PrivacyThresholdViolation: If privacy threshold violations result in no remaining statistics
     """
     # Retrieve the sample size threshold
-    sample_size_threshold = get_env_var("SAMPLE_SIZE_THRESHOLD", default=10, as_type="int")
+    sample_size_threshold = get_env_var(
+        "SAMPLE_SIZE_THRESHOLD", default=10, as_type="int"
+    )
 
     safe_log(
         "info",
@@ -193,10 +195,6 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
     # Check if any statistical results remain - only pass if all original result types still have valid data
     has_categorical_data = False
     has_numerical_data = False
-
-    # Check what was originally present
-    original_had_categorical = "categorical_general_partial_statistics" in result
-    original_had_numerical = "numerical_general_partial_statistics" in result
 
     # For categorical, check if there's actual data beyond nan/outliers
     if "categorical_general_partial_statistics" in filtered_result:

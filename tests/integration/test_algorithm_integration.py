@@ -596,10 +596,7 @@ class TestAlgorithmComponent:
 
                 print(f"Expected failure occurred for {config_name}: {exc}")
             else:
-                print(
-                    f"No exception occurred for {config_name}; validating sanitized result output instead."
-                )
-                assert determine_statistics_acceptance(
+                determine_statistics_acceptance(
                     {
                         "categorical_general_statistics": categorical_statistics,
                         "numerical_general_statistics": numerical_statistics,
@@ -608,10 +605,7 @@ class TestAlgorithmComponent:
                     method,
                     config["database_label"],
                     kwargs,
-                ), (
-                    f"Centralised and federated statistics deviate too much for {config_name} "
-                    "configuration"
-                )
+                ), f"Centralised and federated statistics deviate too much for {config_name} configuration"
         else:
             # Normal success path
             categorical_statistics, numerical_statistics = extract_data_from_result(

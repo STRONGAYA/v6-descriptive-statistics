@@ -192,38 +192,19 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
                     combined_numerical_df.to_json()
                 )
 
-    # Check if any statistical results remain - only pass if all original result types still have valid data
-    has_categorical_data = False
-    has_numerical_data = False
-
-    # For categorical, check if there's actual data beyond nan/outliers
-    if "categorical_general_partial_statistics" in filtered_result:
-        categorical_json = filtered_result["categorical_general_partial_statistics"]
-        categorical_df = pd.read_json(StringIO(categorical_json))
-
-        # Check if there are any rows that are not nan or outliers
-        data_rows = categorical_df[~categorical_df["value"].isin(["nan", "outliers"])]
-        has_categorical_data = not data_rows.empty
-
-    # Check numerical data
-    has_numerical_data = "numerical_general_partial_statistics" in filtered_result
-
-    # Pass if any statistical results remain
-    has_statistical_results = has_categorical_data or has_numerical_data
-
-    # Handle privacy violations
+    # Handle privacy violations - if any variable was stripped, we cannot return
+    # partial results as this could leak information about the removed variables.
+    # This is consistent across both categorical and numerical variables: if even
+    # one requested variable fails the threshold, no data is returned.
     if privacy_violations:
-        if has_statistical_results:
-            # Some results remain - just log a warning
-            safe_log(
-                "warning",
-                "Privacy threshold violations detected for some variables, "
-                "results were adjusted and insufficient counts were set to nan.",
-            )
-        else:
-            # No statistical results remain - raise exception
-            raise PrivacyThresholdViolation(
-                "Privacy threshold violation detected in all statistical results - no data can be returned."
-            )
+        safe_log(
+            "warning",
+            f"Privacy threshold violations detected for variables: {privacy_violations}. "
+            "Cannot return partial results.",
+        )
+        raise PrivacyThresholdViolation(
+            "Privacy threshold violation detected - one or more requested variables "
+            "did not meet the minimum sample size threshold. No data can be returned."
+        )
 
     return filtered_result

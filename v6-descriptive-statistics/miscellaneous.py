@@ -105,8 +105,7 @@ def remove_min_max_from_results(result: Dict[str, str]) -> Dict[str, str]:
 
     if not numerical_df.empty:
         # Filter out rows where the statistic is 'min' or 'max'
-        statistic_col = numerical_df.columns[1]  # statistic column is the second column
-        numerical_df = numerical_df[~numerical_df[statistic_col].isin(["min", "max"])]
+        numerical_df = numerical_df[~numerical_df["statistic"].isin(["min", "max"])]
         result[numerical_key] = numerical_df.to_json()
 
     return result

@@ -33,7 +33,9 @@ from .miscellaneous import (
 )
 
 
-def _normalize_inliers(variables_to_describe: Dict[str, VariableDetails]) -> Dict[str, VariableDetails]:
+def _normalize_inliers(
+    variables_to_describe: Dict[str, VariableDetails],
+) -> Dict[str, VariableDetails]:
     """
     Normalize inliers in variable descriptions from tuples to lists.
 
@@ -170,7 +172,11 @@ def _orchestrate_local_adjusted_deviation(
         )
 
         adjusted_deviations.append(
-            (column_name, "adjusted_sum_of_squared_errors", adjusted_sum_of_squared_errors)
+            (
+                column_name,
+                "adjusted_sum_of_squared_errors",
+                adjusted_sum_of_squared_errors,
+            )
         )
         adjusted_deviations.append((column_name, "count", number_of_rows))
 

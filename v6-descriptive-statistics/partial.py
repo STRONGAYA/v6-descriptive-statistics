@@ -24,7 +24,10 @@ from vantage6_strongaya_general.privacy_measures import (
 
 from vantage6_strongaya_rdf.collect_sparql_data import collect_sparql_data
 
-from .miscellaneous import check_and_enforce_sample_size_threshold
+from .miscellaneous import (
+    check_and_enforce_sample_size_threshold,
+    remove_min_max_from_results,
+)
 
 
 @data(1)
@@ -110,6 +113,9 @@ def partial_general_statistics(
 
     # Compute general statistics
     result = compute_local_general_statistics(df, variables_to_describe)
+
+    # Remove minimum and maximum from the results
+    result = remove_min_max_from_results(result)
 
     # Check the output to make sure all counts are above the sample size threshold or mask them otherwise
     result = check_and_enforce_sample_size_threshold(result)

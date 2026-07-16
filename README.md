@@ -35,8 +35,6 @@ The statistics that are computed include:
 
 - Count
 - Mean
-- Minimum
-- Maximum
 - Percentiles/Quantiles (set to 25th, 50th, and 75th percentile by default)
 - Frequency counts for categorical variables
 

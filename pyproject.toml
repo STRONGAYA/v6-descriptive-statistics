@@ -1,0 +1,88 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "v6-descriptive-statistics"
+version = "2.1.0"
+description = "Vantage6 algorithm that retrieves descriptive statistics"
+authors = [
+    { name = "Joshi Hogenboom (@Jhogenboom)", email = "joshi.hogenboom@maastrichtuniversity.nl" },
+    { name = "Varsha Gouthamchand (@VarshaGouthamchand)"},
+    { name = "Aiara Lobo Gomes (@aiaragomes)" },
+]
+maintainers = [
+    { name = "Joshi Hogenboom (@Jhogenboom)", email = "joshi.hogenboom@maastrichtuniversity.nl" }
+]
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "vantage6-algorithm-tools==4.15",
+    "pandas>=2.2.0",
+    "requests",
+    "numpy",
+    "vantage6-strongaya-general @ git+https://github.com/STRONGAYA/v6-tools-general.git@v1.0.4",
+    "vantage6-strongaya-rdf @ git+https://github.com/STRONGAYA/v6-tools-rdf.git@v1.0.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+    "docker>=6.0.0",
+    "numpy>=2.0.0",
+]
+docs = [
+    "sphinx>=5.0.0",
+    "sphinx-rtd-theme>=1.0.0",
+]
+test-ci = [
+    "pytest>=7.0.0",
+    "pytest-mock>=3.10.0",
+    "docker>=6.0.0",
+    "numpy>=2.0.0",
+]
+lint = [
+    "flake8",
+    "black",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/MaastrichtU-CDS/v6-descriptive-statistics"
+Bugtracker = "https://github.com/MaastrichtU-CDS/v6-descriptive-statistics/issues"
+
+[tool.setuptools]
+packages = ["v6-descriptive-statistics"]
+
+[tool.setuptools.package-data]
+v6_descriptive_statistics = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = ["-v", "--tb=short", "--strict-markers"]
+markers = [
+    "unit: Unit tests for algorithm functions",
+    "integration: Integration tests with Vantage6",
+    "slow: Tests that take a long time to run",
+    "vantage6: Tests that require Vantage6 infrastructure",
+    "docker: Tests that require Docker",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]

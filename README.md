@@ -6,8 +6,8 @@
 <a href="https://www.python.org/downloads/"><img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10+-blue.svg"></a>
 <a href="https://opensource.org/licenses/Apache-2.0"><img alt="Licence: Apache 2.0" src="https://img.shields.io/badge/Licence-Apache%202.0-blue.svg"></a>
 <br>
-<a href="https://github.com/vantage6/vantage6/"><img alt="Vantage6 4.11, 4.12" src="https://img.shields.io/badge/vantage6- 4.11 | 4.12-blue.svg"></a>
-<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: v2.0.1 Pending" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-v2.0.1%20pending-yellow"></a>
+<a href="https://github.com/vantage6/vantage6/"><img alt="Vantage6 4.14, 4.15" src="https://img.shields.io/badge/vantage6- 4.14 | 4.15-blue.svg"></a>
+<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: v2.1.0 Approved" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-v2.1.0%20approved-brightgreen">
 <br>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
 <a href="https://flake8.pycqa.org/"><img alt="Linting: flake8" src="https://img.shields.io/badge/linting-flake8-informational"></a>
@@ -18,7 +18,10 @@
 
 <!--
 To show the approved badge instead, use:
-<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: v2.0.1 Approved" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-v2.0.1%20approved-brightgreen">
+<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: vx.x.x Approved" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-vx.x.x%20approved-brightgreen">
+
+To show the pending badge instead, use:
+<a href="https://strongaya.eu/wp-content/uploads/2025/07/algorithm_review_guidelines.pdf"><img alt="STRONG AYA Algorithm Guideline Conformity: vx.x.x Pending" src="https://img.shields.io/badge/STRONG%20AYA%20Algorithm%20Guideline%20Conformity-vx.x.x%20pending-yellow"></a>
 -->
 
 ---
@@ -32,10 +35,12 @@ The statistics that are computed include:
 
 - Count
 - Mean
-- Minimum
-- Maximum
 - Percentiles/Quantiles (set to 25th, 50th, and 75th percentile by default)
 - Frequency counts for categorical variables
+
+For usage, we recommend that within your collaboration, every node should configure the `SAMPLE_SIZE_THRESHOLD` 
+environment variable to a value that is you have reached a consensus on.
+If not specified, the default value is that the working dataframe should at least contain 10 records.
 
 A more detailed description of the algorithm and how to use it can be found in the algorithm's
 [Wiki](https://github.com/STRONGAYA/v6-descriptive-statistics/wiki) and the `/docs` directory.

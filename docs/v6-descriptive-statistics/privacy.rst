@@ -33,11 +33,9 @@ For numerical variables:
 - The standard deviation
 - The number of missing values
 - The number of outliers -i.e. if inliers were specified- in this case outliers are considered values that are not within the specified range.
-- The minimum
 - The 25th percentile (partial results only)
 - The median (partial results only)
 - The 75th percentile (partial results only)
-- The maximum
 
 .. which data is shared between the parties? E.g. for an average, sum and total count
 .. are shared.

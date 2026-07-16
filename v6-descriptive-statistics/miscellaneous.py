@@ -81,6 +81,36 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
     return True
 
 
+def remove_min_max_from_results(result: Dict[str, str]) -> Dict[str, str]:
+    """
+    Remove minimum and maximum statistics from numerical results.
+
+    Args:
+        result (Dict[str, str]): Dictionary containing statistical results with JSON strings.
+
+    Returns:
+        Dict[str, str]: Result with min and max statistics removed from numerical results.
+    """
+    numerical_key = None
+    for key in ("numerical_general_partial_statistics", "numerical_general_statistics"):
+        if key in result:
+            numerical_key = key
+            break
+
+    if numerical_key is None:
+        return result
+
+    numerical_json = result[numerical_key]
+    numerical_df = pd.read_json(StringIO(numerical_json))
+
+    if not numerical_df.empty:
+        # Filter out rows where the statistic is 'min' or 'max'
+        numerical_df = numerical_df[~numerical_df["statistic"].isin(["min", "max"])]
+        result[numerical_key] = numerical_df.to_json()
+
+    return result
+
+
 def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str, str]:
     """
     Check if all counts in the statistics result meet the sample size threshold.
@@ -96,11 +126,9 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
         PrivacyThresholdViolation: If privacy threshold violations result in no remaining statistics
     """
     # Retrieve the sample size threshold
-    sample_size_threshold = get_env_var("SAMPLE_SIZE_THRESHOLD")
-    try:
-        sample_size_threshold = int(sample_size_threshold)
-    except TypeError:
-        sample_size_threshold = 10
+    sample_size_threshold = get_env_var(
+        "SAMPLE_SIZE_THRESHOLD", default=10, as_type="int"
+    )
 
     safe_log(
         "info",
@@ -170,15 +198,17 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
                 # Find the count row for this variable
                 count_row = variable_rows[variable_rows["statistic"] == "count"]
 
-                if not count_row.empty:
-                    count_value = count_row.iloc[0]["value"]
+                if count_row.empty:
+                    # No count row found - treat as privacy violation
+                    privacy_violations.append(f"numerical_violation_{variable_name}")
+                    continue  # Skip this variable entirely
 
-                    if count_value < sample_size_threshold:
-                        # Count doesn't meet threshold - remove all statistics for this variable
-                        privacy_violations.append(
-                            f"numerical_violation_{variable_name}"
-                        )
-                        continue  # Skip this variable entirely
+                count_value = count_row.iloc[0]["value"]
+
+                if count_value < sample_size_threshold:
+                    # Count doesn't meet threshold - remove all statistics for this variable
+                    privacy_violations.append(f"numerical_violation_{variable_name}")
+                    continue  # Skip this variable entirely
 
                 # Variable meets threshold - keep all its statistics
                 valid_numerical_rows.append(variable_rows)
@@ -192,19 +222,16 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
                     combined_numerical_df.to_json()
                 )
 
-    # Copy any other results that don't need threshold checking
-    for key, value in result.items():
-        if key not in [
-            "categorical_general_partial_statistics",
-            "numerical_general_partial_statistics",
-        ]:
-            filtered_result[key] = value
-
-    # Check if any statistical results remain - only pass if all original result types still have valid data
+    # Determine whether all originally-requested data types still have valid results.
+    # We require that each requested data type (categorical/numerical) still produces
+    # at least some output after threshold filtering. This prevents a bad actor from
+    # using narrow stratification to strip one data type while hiding behind surviving
+    # results from another type. The check is per-type (not per-variable) to avoid
+    # rejecting legitimate requests where one variable in a group has low counts but
+    # others are fine.
     has_categorical_data = False
     has_numerical_data = False
 
-    # Check what was originally present
     original_had_categorical = "categorical_general_partial_statistics" in result
     original_had_numerical = "numerical_general_partial_statistics" in result
 
@@ -220,7 +247,6 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
     # Check numerical data
     has_numerical_data = "numerical_general_partial_statistics" in filtered_result
 
-    # Only pass if all originally present data types still have valid results
     has_statistical_results = (
         not original_had_categorical or has_categorical_data
     ) and (not original_had_numerical or has_numerical_data)
@@ -228,16 +254,18 @@ def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str,
     # Handle privacy violations
     if privacy_violations:
         if has_statistical_results:
-            # Some results remain - just log a warning
+            # Some results remain for all requested types - log a warning
             safe_log(
                 "warning",
-                "Privacy threshold violations detected for some variables, "
-                "results were adjusted and insufficient counts were set to nan.",
+                f"Privacy threshold violations detected for variables: {privacy_violations}. "
+                "Results were adjusted and insufficient counts were removed.",
             )
         else:
-            # No statistical results remain - raise exception
+            # At least one originally-requested data type has no valid results left
             raise PrivacyThresholdViolation(
-                "Privacy threshold violation detected in all statistical results - no data can be returned."
+                "Privacy threshold violation detected - all variables of a requested "
+                "data type were removed due to insufficient sample size. "
+                "No data can be returned."
             )
 
     return filtered_result

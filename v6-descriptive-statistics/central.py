@@ -17,7 +17,7 @@ from vantage6_strongaya_general.general_statistics import (
     compute_aggregate_adjusted_deviation,
 )
 
-from .miscellaneous import check_input_structure
+from .miscellaneous import check_input_structure, remove_min_max_from_results
 
 
 @algorithm_client
@@ -106,9 +106,9 @@ def central(
     input_ = {
         "method": "partial_aggregate_adjusted_deviation",
         "kwargs": {
-            "numerical_aggregated_results": results_general_statistics[
-                "numerical_general_statistics"
-            ],
+            "numerical_aggregated_results": results_general_statistics.get(
+                "numerical_general_statistics", {}
+            ),
             "variables_to_describe": variables_to_describe,
             "variables_to_stratify": variables_to_stratify,
         },
@@ -134,6 +134,9 @@ def central(
     results = compute_aggregate_adjusted_deviation(
         results_deviation, results_general_statistics
     )
+
+    # Remove minimum and maximum from the final results
+    results = remove_min_max_from_results(results)
 
     # Return the final results of the algorithm
     return results

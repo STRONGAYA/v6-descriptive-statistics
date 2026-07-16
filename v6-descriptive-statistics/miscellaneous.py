@@ -81,6 +81,36 @@ def check_input_structure(variables_to_describe: Dict[str, VariableDetails]) -> 
     return True
 
 
+def remove_min_max_from_results(result: Dict[str, str]) -> Dict[str, str]:
+    """
+    Remove minimum and maximum statistics from numerical results.
+
+    Args:
+        result (Dict[str, str]): Dictionary containing statistical results with JSON strings.
+
+    Returns:
+        Dict[str, str]: Result with min and max statistics removed from numerical results.
+    """
+    numerical_key = None
+    for key in ("numerical_general_partial_statistics", "numerical_general_statistics"):
+        if key in result:
+            numerical_key = key
+            break
+
+    if numerical_key is None:
+        return result
+
+    numerical_json = result[numerical_key]
+    numerical_df = pd.read_json(StringIO(numerical_json))
+
+    if not numerical_df.empty:
+        # Filter out rows where the statistic is 'min' or 'max'
+        numerical_df = numerical_df[~numerical_df["statistic"].isin(["min", "max"])]
+        result[numerical_key] = numerical_df.to_json()
+
+    return result
+
+
 def check_and_enforce_sample_size_threshold(result: Dict[str, str]) -> Dict[str, str]:
     """
     Check if all counts in the statistics result meet the sample size threshold.

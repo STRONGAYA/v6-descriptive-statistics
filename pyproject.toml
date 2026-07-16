@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "v6-descriptive-statistics"
-version = "2.0.2"
+version = "2.1.0"
 description = "Vantage6 algorithm that retrieves descriptive statistics"
 authors = [
     { name = "Joshi Hogenboom (@Jhogenboom)", email = "joshi.hogenboom@maastrichtuniversity.nl" },

@@ -21,7 +21,7 @@ __all__ = [
 ]
 
 # Package information
-__version__ = "2.0.1"
+__version__ = "2.1.0"
 __author__ = "STRONGAYA"
 __description__ = (
     "Vantage6 algorithm for descriptive statistics with comprehensive testing"

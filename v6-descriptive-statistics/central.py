@@ -99,11 +99,10 @@ def central(
 
     # Filter variables_to_describe to only include numerical variables for aggregate-adjusted deviation
     # This prevents unnecessary querying of categorical variables
-    numerical_general_stats = results_general_statistics.get("numerical_general_statistics", {})
     numerical_variables_to_describe = {
-        var_name: var_details 
-        for var_name, var_details in variables_to_describe.items() 
-        if var_name in numerical_general_stats
+        var_name: var_details
+        for var_name, var_details in variables_to_describe.items()
+        if var_details.get("datatype") == "numerical"
     }
 
     # Create a subtask to calculate aggregate-adjusted deviation; using the aggregated numerical general statistics
@@ -118,7 +117,7 @@ def central(
             "numerical_aggregated_results": results_general_statistics.get(
                 "numerical_general_statistics", {}
             ),
-            "variables_to_describe": numerical_variables_to_describe,  # Only numerical variables
+            "variables_to_describe": numerical_variables_to_describe,
             "variables_to_stratify": variables_to_stratify,
         },
     }

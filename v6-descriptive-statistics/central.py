@@ -97,51 +97,55 @@ def central(
         results_general_statistics
     )
 
-    # Filter variables_to_describe to only include numerical variables for aggregate-adjusted deviation
-    # This prevents unnecessary querying of categorical variables
+    # Filter variables_to_describe to only include numerical variables that were actually processed
+    # This prevents unnecessary querying of categorical variables and variables not present in data
+    numerical_general_stats = results_general_statistics.get("numerical_general_statistics", {})
     numerical_variables_to_describe = {
         var_name: var_details
         for var_name, var_details in variables_to_describe.items()
-        if var_details.get("datatype") == "numerical"
+        if var_name in numerical_general_stats
     }
 
-    # Create a subtask to calculate aggregate-adjusted deviation; using the aggregated numerical general statistics
-    safe_log(
-        "info",
-        "Creating subtask to calculate aggregate-adjusted deviation using general statistics.",
-    )
+    # Only run aggregate-adjusted deviation query if there are numerical variables to process
+    if numerical_variables_to_describe:
+        # Create a subtask to calculate aggregate-adjusted deviation; using the aggregated numerical general statistics
+        safe_log(
+            "info",
+            "Creating subtask to calculate aggregate-adjusted deviation using general statistics.",
+        )
 
-    input_ = {
-        "method": "partial_aggregate_adjusted_deviation",
-        "kwargs": {
-            "numerical_aggregated_results": results_general_statistics.get(
-                "numerical_general_statistics", {}
-            ),
-            "variables_to_describe": numerical_variables_to_describe,
-            "variables_to_stratify": variables_to_stratify,
-        },
-    }
+        input_ = {
+            "method": "partial_aggregate_adjusted_deviation",
+            "kwargs": {
+                "numerical_aggregated_results": numerical_general_stats,
+                "variables_to_describe": numerical_variables_to_describe,
+                "variables_to_stratify": variables_to_stratify,
+            },
+        }
 
-    task_adjusted_deviation = client.task.create(
-        input_,
-        organisation_ids,
-        "Descriptive Statistics - Aggregate Adjusted Deviation",
-        "This subtask determines the aggregate-adjusted deviation of "
-        "the variables to describe.",
-    )
+        task_adjusted_deviation = client.task.create(
+            input_,
+            organisation_ids,
+            "Descriptive Statistics - Aggregate Adjusted Deviation",
+            "This subtask determines the aggregate-adjusted deviation of "
+            "the variables to describe.",
+        )
 
-    # Wait for the node(s) to return the results of the subtask
-    safe_log("info", f"Waiting for results of task {task_adjusted_deviation.get('id')}")
-    results_deviation = client.wait_for_results(task_adjusted_deviation.get("id"))
-    safe_log("info", f"Results of task {task_adjusted_deviation.get('id')} obtained")
+        # Wait for the node(s) to return the results of the subtask
+        safe_log("info", f"Waiting for results of task {task_adjusted_deviation.get('id')}")
+        results_deviation = client.wait_for_results(task_adjusted_deviation.get("id"))
+        safe_log("info", f"Results of task {task_adjusted_deviation.get('id')} obtained")
 
-    # Ensure that all organisations returned results
-    check_partial_result_presence(results_deviation, organisation_ids)
+        # Ensure that all organisations returned results
+        check_partial_result_presence(results_deviation, organisation_ids)
 
-    # Compute the aggregate of the aggregate-adjusted deviation and include it in the general statistics
-    results = compute_aggregate_adjusted_deviation(
-        results_deviation, results_general_statistics
-    )
+        # Compute the aggregate of the aggregate-adjusted deviation and include it in the general statistics
+        results = compute_aggregate_adjusted_deviation(
+            results_deviation, results_general_statistics
+        )
+    else:
+        # No numerical variables to process, use general statistics results as final results
+        results = results_general_statistics
 
     # Remove minimum and maximum from the final results
     results = remove_min_max_from_results(results)

@@ -99,7 +99,9 @@ def central(
 
     # Filter variables_to_describe to only include numerical variables that were actually processed
     # This prevents unnecessary querying of categorical variables and variables not present in data
-    numerical_general_stats = results_general_statistics.get("numerical_general_statistics", {})
+    numerical_general_stats = results_general_statistics.get(
+        "numerical_general_statistics", {}
+    )
     numerical_variables_to_describe = {
         var_name: var_details
         for var_name, var_details in variables_to_describe.items()
@@ -132,9 +134,13 @@ def central(
         )
 
         # Wait for the node(s) to return the results of the subtask
-        safe_log("info", f"Waiting for results of task {task_adjusted_deviation.get('id')}")
+        safe_log(
+            "info", f"Waiting for results of task {task_adjusted_deviation.get('id')}"
+        )
         results_deviation = client.wait_for_results(task_adjusted_deviation.get("id"))
-        safe_log("info", f"Results of task {task_adjusted_deviation.get('id')} obtained")
+        safe_log(
+            "info", f"Results of task {task_adjusted_deviation.get('id')} obtained"
+        )
 
         # Ensure that all organisations returned results
         check_partial_result_presence(results_deviation, organisation_ids)

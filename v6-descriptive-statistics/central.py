@@ -25,7 +25,7 @@ def central(
     client: AlgorithmClient,
     variables_to_describe: Dict[str, VariableDetails],
     variables_to_stratify: StratificationDetails = None,
-    organisation_ids: List[int] = None,
+    organisations_to_include: List[int] = None,
 ) -> Dict[str, Any]:
     """
     Central function to aggregate descriptive statistics from multiple organisations.
@@ -47,7 +47,7 @@ def central(
                                                                             'datatype': 'int'
                                                                             }
                                                                     }
-        organisation_ids (list[int], optional): List of organisation IDs to include.
+        organisations_to_include (list[int], optional): List of organisation IDs to include.
                                                 Defaults to None - therewith including all organisations.
 
     Returns:
@@ -61,7 +61,7 @@ def central(
         )
 
     # Collect all organisations that participate in this collaboration unless specified
-    organisation_ids = collect_organisation_ids(organisation_ids, client)
+    organisations_to_include = collect_organisation_ids(organisations_to_include, client)
 
     # Create the subtask for general statistics
     safe_log("info", "Creating subtask to calculate general statistics.")
@@ -76,7 +76,7 @@ def central(
 
     task_general_statistics = client.task.create(
         input_,
-        organisation_ids,
+        organisations_to_include,
         "Descriptive Statistics - General",
         "This subtask determines the general statistics of "
         "the variables to describe.",
@@ -90,7 +90,7 @@ def central(
     safe_log("info", f"Results of task {task_general_statistics.get('id')} obtained")
 
     # Ensure that all organisations returned results
-    check_partial_result_presence(results_general_statistics, organisation_ids)
+    check_partial_result_presence(results_general_statistics, organisations_to_include)
 
     # Aggregate the general statistics
     results_general_statistics = compute_aggregate_general_statistics(
@@ -116,7 +116,7 @@ def central(
 
     task_adjusted_deviation = client.task.create(
         input_,
-        organisation_ids,
+        organisations_to_include,
         "Descriptive Statistics - Aggregate Adjusted Deviation",
         "This subtask determines the aggregate-adjusted deviation of "
         "the variables to describe.",
@@ -128,7 +128,7 @@ def central(
     safe_log("info", f"Results of task {task_adjusted_deviation.get('id')} obtained")
 
     # Ensure that all organisations returned results
-    check_partial_result_presence(results_deviation, organisation_ids)
+    check_partial_result_presence(results_deviation, organisations_to_include)
 
     # Compute the aggregate of the aggregate-adjusted deviation and include it in the general statistics
     results = compute_aggregate_adjusted_deviation(

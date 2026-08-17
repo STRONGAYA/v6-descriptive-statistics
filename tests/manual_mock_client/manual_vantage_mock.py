@@ -53,7 +53,7 @@ central_task = client.task.create(
         "kwargs": {
             "variables_to_describe": {"Age": {"datatype": "numerical"}},
             "variables_to_stratify": None,
-            "organisation_ids": None,
+            "organisations_to_include": None,
         },
     },
     organizations=[org_ids[0]],

@@ -49,7 +49,7 @@ def test_methods():
     Parameters set to None are automatically filled by test methods from configurations:
     - "variables_to_describe": Filled from config['variables_to_describe_basic'] or
     config['variables_to_describe_inlier_specific']
-    - "organisation_ids": Filled from config['organisation_subset']
+    - "organisations_to_include": Filled from config['organisation_subset']
     - "variables_to_stratify": Filled from config['variables_to_stratify']
 
     EXAMPLES:
@@ -64,7 +64,7 @@ def test_methods():
             },
             "organisation_selection": {
                 "variables_to_describe": None,  # Will be filled from config
-                "organisation_ids": None,  # Will be filled from config
+                "organisations_to_include": None,  # Will be filled from config
             },
             "data_stratification": {
                 "variables_to_describe": None,  # Will be filled from config
@@ -76,7 +76,7 @@ def test_methods():
             "parameter_galore": {
                 "variables_to_describe": None,  # Will be filled from config
                 "variables_to_stratify": None,  # Will be filled from config
-                "organisation_ids": None,  # Will be filled from config
+                "organisations_to_include": None,  # Will be filled from config
             },
         },
         "partial_general_statistics": {
@@ -123,7 +123,7 @@ def test_configurations():
     DYNAMIC PARAMETER FILLING:
     These values are used to fill None parameters in method kwargs:
     - 'variables_to_describe_basic' -> "variables_to_describe"
-    - 'organisation_subset' -> "organisation_ids"
+    - 'organisation_subset' -> "organisations_to_include"
     - 'variables_to_stratify' -> "variables_to_stratify"
 
     EXAMPLE CONFIGURATION TYPES:
@@ -444,7 +444,7 @@ class TestAlgorithmComponent:
         Test algorithm with organisation selection, including expected failures.
 
         CUSTOMISATION REQUIRED:
-        - Ensure your algorithm supports organisation_ids parameter
+        - Ensure your algorithm supports organisations_to_include parameter
         - Update kwargs preparation for organisation-specific logic
         - Modify validation to account for federated scenarios
         """
@@ -461,7 +461,7 @@ class TestAlgorithmComponent:
         # Prepare method-specific kwargs from method configuration
         kwargs = method_config["organisation_selection"].copy()
         kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
-        kwargs["organisation_ids"] = config["organisation_subset"]
+        kwargs["organisations_to_include"] = config["organisation_subset"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -756,9 +756,9 @@ class TestAlgorithmComponent:
         kwargs["variables_to_describe"] = config["variables_to_describe_basic"]
         kwargs["variables_to_stratify"] = config["variables_to_stratify"]
 
-        # Only add organisation_ids if the method supports it
-        if "organisation_ids" in kwargs:
-            kwargs["organisation_ids"] = config["organisation_subset"]
+        # Only add organisations_to_include if the method supports it
+        if "organisations_to_include" in kwargs:
+            kwargs["organisations_to_include"] = config["organisation_subset"]
 
         # Create a task for the client to retrieve the descriptive data
         task = client.task.create(
@@ -1002,9 +1002,9 @@ def determine_statistics_acceptance(
     # Determine organisation multiplier based on method and kwargs
     if method == "central":
         # Get organisation subset multiplier
-        organisation_ids = kwargs.get("organisation_ids", [1, 2, 3])
+        organisations_to_include = kwargs.get("organisations_to_include", [1, 2, 3])
         # If specific organisations selected, adjust multiplier based on the fraction of total nodes
-        organisation_multiplier = 3 / len(organisation_ids)
+        organisation_multiplier = 3 / len(organisations_to_include)
     elif method == "partial_general_statistics":
         # Data is distributed across 3 organisations in the test setup
         organisation_multiplier = 3

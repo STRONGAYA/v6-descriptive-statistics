@@ -1,9 +1,12 @@
 from typing import Any, Dict, List
 
+from vantage6.algorithm.client import AlgorithmClient
 from vantage6.algorithm.tools.decorators import algorithm_client
 from vantage6.algorithm.tools.exceptions import UserInputError
-from vantage6.algorithm.client import AlgorithmClient
-
+from vantage6_strongaya_general.general_statistics import (
+    compute_aggregate_general_statistics,
+    compute_aggregate_adjusted_deviation,
+)
 # General federated algorithm functions
 from vantage6_strongaya_general.miscellaneous import (
     check_partial_result_presence,
@@ -11,10 +14,6 @@ from vantage6_strongaya_general.miscellaneous import (
     safe_log,
     VariableDetails,
     StratificationDetails,
-)
-from vantage6_strongaya_general.general_statistics import (
-    compute_aggregate_general_statistics,
-    compute_aggregate_adjusted_deviation,
 )
 
 from .miscellaneous import check_input_structure, remove_min_max_from_results
@@ -61,7 +60,9 @@ def central(
         )
 
     # Collect all organisations that participate in this collaboration unless specified
-    organisations_to_include = collect_organisation_ids(organisations_to_include, client)
+    organisations_to_include = collect_organisation_ids(
+        organisations_to_include, client
+    )
 
     # Create the subtask for general statistics
     safe_log("info", "Creating subtask to calculate general statistics.")

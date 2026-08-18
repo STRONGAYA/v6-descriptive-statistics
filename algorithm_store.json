@@ -14,7 +14,7 @@
           "allowed_values": [],
           "name": "variables_to_describe",
           "display_name": "Variables to Describe",
-          "description": "A dictionary of variables to describe, where each specifies datatype ('numerical' or 'categorical') and optionally inliers. For example: {'ncit:C156420': {'datatype': 'numerical', 'inliers': (20, 30)}} or {'ncit:C28421': {'datatype': 'categorical', 'inliers': ('ncit:C16576', 'ncit:C20197', 'ncit:C45908')}}",
+          "description": "A dictionary of variables to describe, where each specifies datatype (\"numerical\" or \"categorical\") and optionally inliers. For example: {\"ncit:C156420\": {\"datatype\": \"numerical\", \"inliers\": (20, 30)}} or {\"ncit:C28421\": {\"datatype\": \"categorical\", \"inliers\": (\"ncit:C16576\", \"ncit:C20197\", \"ncit:C45908\")}}",
           "has_default_value": false,
           "default_value": "",
           "conditional_operator": null,
@@ -26,7 +26,7 @@
           "allowed_values": [],
           "name": "variables_to_stratify",
           "display_name": "Variables to Stratify on",
-          "description": "Dictionary of variables to stratify on. For each variable, provide a list of allowed categories or a range with optional 'start' and/or 'end' values. For example: {'C28421': ['ncit:C16576'], 'C156420': {'start': 30, 'end': 35}}",
+          "description": "Dictionary of variables to stratify on. For each variable, provide a list of allowed categories or a range with optional \"start\" and/or \"end\" values. For example: {\"C28421\": [\"ncit:C16576\"], \"C156420\": {\"start\": 30, \"end\": 35}}",
           "has_default_value": true,
           "default_value": null,
           "conditional_operator": null,
@@ -53,7 +53,6 @@
           "description": "A table providing the aggregate descriptive statistics for categorical data.",
           "schema": {
             "location": [
-              "general_statistics",
               "categorical_general_statistics"
             ],
             "columns": []
@@ -65,7 +64,6 @@
           "description": "A table providing the aggregate descriptive statistics for numerical data.",
           "schema": {
             "location": [
-              "general_statistics",
               "numerical_general_statistics"
             ],
             "columns": []
@@ -91,7 +89,7 @@
           "allowed_values": [],
           "name": "variables_to_describe",
           "display_name": "Variables to describe",
-          "description": "A dictionary of variables to describe, where each specifies datatype ('numerical' or 'categorical') and optionally inliers. For example: {'ncit:C156420': {'datatype': 'numerical', 'inliers': (20, 30)}} or {'ncit:C28421': {'datatype': 'categorical', 'inliers': ('ncit:C16576', 'ncit:C20197', 'ncit:C45908')}}",
+          "description": "A dictionary of variables to describe, where each specifies datatype (\"numerical\" or \"categorical\") and optionally inliers. For example: {\"ncit:C156420\": {\"datatype\": \"numerical\", \"inliers\": (20, 30)}} or {\"ncit:C28421\": {\"datatype\": \"categorical\", \"inliers\": (\"ncit:C16576\", \"ncit:C20197\", \"ncit:C45908\")}}",
           "has_default_value": false,
           "default_value": "",
           "conditional_operator": null,
@@ -103,7 +101,7 @@
           "allowed_values": [],
           "name": "variables_to_stratify",
           "display_name": "Variables to stratify on",
-          "description": "Dictionary of variables to stratify on. For each variable, provide a list of allowed categories or a range with optional 'start' and/or 'end' values. For example: {'C28421': ['ncit:C16576'], 'C156420': {'start': 30, 'end': 35}}",
+          "description": "Dictionary of variables to stratify on. For each variable, provide a list of allowed categories or a range with optional \"start\" and/or \"end\" values. For example: {\"C28421\": [\"ncit:C16576\"], \"C156420\": {\"start\": 30, \"end\": 35}}",
           "has_default_value": true,
           "default_value": null,
           "conditional_operator": null,
@@ -118,7 +116,6 @@
           "description": "A table providing the aggregate descriptive statistics for categorical data.",
           "schema": {
             "location": [
-              "general_statistics",
               "categorical_general_partial_statistics"
             ],
             "columns": []
@@ -130,7 +127,6 @@
           "description": "A table providing the aggregate descriptive statistics for numerical data.",
           "schema": {
             "location": [
-              "general_statistics",
               "numerical_general_partial_statistics"
             ],
             "columns": []

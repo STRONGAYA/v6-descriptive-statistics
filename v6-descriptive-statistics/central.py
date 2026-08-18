@@ -7,6 +7,7 @@ from vantage6_strongaya_general.general_statistics import (
     compute_aggregate_general_statistics,
     compute_aggregate_adjusted_deviation,
 )
+
 # General federated algorithm functions
 from vantage6_strongaya_general.miscellaneous import (
     check_partial_result_presence,
